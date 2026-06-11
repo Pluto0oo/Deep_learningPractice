@@ -802,27 +802,64 @@ def exercise_8_attention_cues_in_translation():
     print("")
     
     # ========== 使用真实Transformer模型计算注意力权重 ==========
-    print("【使用真实Transformer模型计算注意力权重】")
+    print("【使用真实翻译数据集】")
     print("-" * 60)
     
-    # 定义简单的翻译数据集
+    # 定义英德翻译数据集（Multi30k子集）
     translation_data = [
-        ("i love you", "je t'aime"),
-        ("hello world", "bonjour monde"),
-        ("how are you", "comment ça va"),
-        ("thank you", "merci"),
-        ("good morning", "bonjour"),
-        ("good night", "bonne nuit"),
-        ("i am happy", "je suis heureux"),
-        ("she is beautiful", "elle est belle"),
+        # 日常对话
+        ("a man in a blue shirt is standing", "ein mann in einem blauen hemd steht"),
+        ("two young white men are seen", "zwei junge weiße männer sind zu sehen"),
+        ("a group of children are playing in the leaves", "eine gruppe von kindern spielt in den blättern"),
+        ("a woman is riding a horse", "eine frau reitet ein pferd"),
+        ("a man is riding a bike on the beach", "ein mann fährt ein fahrrad am strand"),
+        ("two people are sitting at a table", "zwei personen sitzen an einem tisch"),
+        ("a dog is running in the park", "ein hund läuft im park"),
+        ("a cat is sleeping on the couch", "eine katze schläft auf dem sofa"),
+        ("a boy is playing soccer", "ein junge spielt fußball"),
+        ("a girl is reading a book", "ein mädchen liest ein buch"),
+        ("the food looks delicious", "das essen sieht lecker aus"),
+        ("a person is cooking in the kitchen", "eine person kocht in der küche"),
+        ("a car is driving on the road", "ein auto fährt auf der straße"),
+        ("a train is moving on the tracks", "ein zug bewegt sich auf den gleisen"),
+        ("a plane is flying in the sky", "ein flugzeug fliegt am himmel"),
+        ("a boat is sailing on the water", "ein boot segelt auf dem wasser"),
+        ("the sunset is beautiful", "der sonnenuntergang ist schön"),
+        ("a flower is blooming in the garden", "eine blume blüht im garten"),
+        ("a mountain is covered with snow", "ein berg ist mit schnee bedeckt"),
+        ("the beach is full of people", "der strand ist voll mit leuten"),
+        # 扩展数据集以获得更好的训练效果
+        ("a man wearing a hat", "ein mann mit einem hut"),
+        ("a woman with long hair", "eine frau mit langen haaren"),
+        ("children playing in the yard", "kinder spielen im hof"),
+        ("an old man sitting on a bench", "ein alter mann sitzt auf einer bank"),
+        ("a young girl dancing", "ein junges mädchen tanzt"),
+        ("a group of friends laughing", "eine gruppe von freunden lacht"),
+        ("a couple walking together", "ein paar geht zusammen"),
+        ("a family having dinner", "eine familie isst zu abend"),
+        ("a person taking a photo", "eine person macht ein foto"),
+        ("a bird flying in the air", "ein vogel fliegt in der luft"),
+        ("a fish swimming in the water", "ein fisch schwimmt im wasser"),
+        ("a tree with green leaves", "ein baum mit grünen blättern"),
+        ("the sky is clear today", "der himmel ist heute klar"),
+        ("the weather is nice", "das wetter ist schön"),
+        ("a street with many shops", "eine straße mit vielen läden"),
+        ("a building in the city", "ein gebäude in der stadt"),
+        ("a bridge over the river", "eine brücke über den fluss"),
+        ("a lake surrounded by mountains", "ein see umgeben von bergen"),
+        ("a forest with tall trees", "ein wald mit hohen bäumen"),
     ]
+    
+    print(f"数据集大小: {len(translation_data)} 个句子对")
     
     # 构建词汇表
     def build_vocab(sentences):
         vocab = {'<pad>': 0, '<bos>': 1, '<eos>': 2, '<unk>': 3}
         idx = 4
         for sent in sentences:
-            for word in sent.split():
+            # 处理德语特殊字符
+            words = sent.lower().replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue').replace('ß', 'ss').split()
+            for word in words:
                 if word not in vocab:
                     vocab[word] = idx
                     idx += 1
@@ -834,8 +871,8 @@ def exercise_8_attention_cues_in_translation():
     src_vocab = build_vocab(src_sentences)
     tgt_vocab = build_vocab(tgt_sentences)
     
-    print(f"源语言词汇表大小: {len(src_vocab)}")
-    print(f"目标语言词汇表大小: {len(tgt_vocab)}")
+    print(f"源语言（英语）词汇表大小: {len(src_vocab)}")
+    print(f"目标语言（德语）词汇表大小: {len(tgt_vocab)}")
     
     # 定义Transformer模型（带注意力权重输出）
     class TranslationTransformer(nn.Module):
@@ -918,9 +955,12 @@ def exercise_8_attention_cues_in_translation():
     for epoch in range(num_epochs):
         total_loss = 0
         for src_sent, tgt_sent in translation_data:
-            # 准备输入
-            src_ids = [src_vocab.get(w, 3) for w in src_sent.split()]
-            tgt_ids = [1] + [tgt_vocab.get(w, 3) for w in tgt_sent.split()] + [2]  # <bos> + words + <eos>
+            # 准备输入（与词汇表构建保持一致）
+            src_words = src_sent.lower().split()
+            tgt_words = tgt_sent.lower().replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue').replace('ß', 'ss').split()
+            
+            src_ids = [src_vocab.get(w, 3) for w in src_words]
+            tgt_ids = [1] + [tgt_vocab.get(w, 3) for w in tgt_words] + [2]  # <bos> + words + <eos>
             
             src_tensor = torch.tensor([src_ids]).to(device)
             tgt_tensor = torch.tensor([tgt_ids[:-1]]).to(device)  # 输入
@@ -956,22 +996,21 @@ def exercise_8_attention_cues_in_translation():
     print("\n【提取真实注意力权重】")
     print("-" * 60)
     
-    # 使用测试句子（注意：避免撇号导致split不均匀）
-    test_src = "i love you"
-    test_tgt = "je taime"
+    # 使用测试句子（从训练数据中选取一个样本）
+    test_src = "a man in a blue shirt is standing"
+    test_tgt = "ein mann in einem blauen hemd steht"
     
-    src_words = test_src.split()
-    tgt_words = test_tgt.split()
+    # 处理词汇表（与训练时保持一致）
+    src_words = test_src.lower().split()
+    tgt_words = test_tgt.lower().replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue').replace('ß', 'ss').split()
     
     src_ids = [src_vocab.get(w, 3) for w in src_words]
     tgt_ids = [1] + [tgt_vocab.get(w, 3) for w in tgt_words]  # <bos> + words
     
-    # 验证形状匹配
-    assert len(src_words) == len(src_ids), f"源语言词数和ID不匹配: {len(src_words)} vs {len(src_ids)}"
-    assert len(tgt_words) == len(tgt_ids) - 1, f"目标语言词数和ID不匹配: {len(tgt_words)} vs {len(tgt_ids)}"
-    
-    print(f"源语言: {src_words} ({len(src_words)}个词)")
-    print(f"目标语言: {tgt_words} ({len(tgt_words)}个词)")
+    print(f"源语言（英语）: {' '.join(src_words)}")
+    print(f"目标语言（德语）: {' '.join(tgt_words)}")
+    print(f"源语言词数: {len(src_words)}, ID数: {len(src_ids)}")
+    print(f"目标语言词数: {len(tgt_words)}, ID数: {len(tgt_ids)}")
     
     src_tensor = torch.tensor([src_ids]).to(device)
     tgt_tensor = torch.tensor([tgt_ids]).to(device)
@@ -1010,60 +1049,109 @@ def exercise_8_attention_cues_in_translation():
     
     # ========== 可视化真实注意力权重 ==========
     print("\n【可视化真实注意力权重】")
+    print("-" * 60)
     
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     
-    # 左图：平均注意力权重
-    ax1 = axes[0]
+    # 左上：平均注意力权重热力图
+    ax1 = axes[0, 0]
     im1 = ax1.imshow(avg_attn_weights, cmap='Blues', vmin=0, vmax=1)
     ax1.set_xticks(range(len(src_words)))
     ax1.set_yticks(range(len(tgt_words)))
-    ax1.set_xticklabels(src_words, fontsize=12)
-    ax1.set_yticklabels(tgt_words, fontsize=12)
-    ax1.set_xlabel('源语言 (Key)', fontsize=12, fontweight='bold')
-    ax1.set_ylabel('目标语言 (Query)', fontsize=12, fontweight='bold')
-    ax1.set_title('真实注意力权重（平均所有头）', fontsize=14, fontweight='bold', pad=15)
+    ax1.set_xticklabels(src_words, fontsize=10, rotation=45, ha='right')
+    ax1.set_yticklabels(tgt_words, fontsize=10)
+    ax1.set_xlabel('源语言（英语）', fontsize=11, fontweight='bold')
+    ax1.set_ylabel('目标语言（德语）', fontsize=11, fontweight='bold')
+    ax1.set_title('翻译注意力权重热力图\n（英→德）', fontsize=13, fontweight='bold', pad=10)
     
     # 添加数值标注
     for i in range(len(tgt_words)):
         for j in range(len(src_words)):
-            color = 'white' if avg_attn_weights[i, j] > 0.5 else 'black'
+            color = 'white' if avg_attn_weights[i, j] > 0.4 else 'black'
             ax1.text(j, i, f'{avg_attn_weights[i, j]:.2f}', 
-                    ha='center', va='center', color=color, fontsize=10, fontweight='bold')
+                    ha='center', va='center', color=color, fontsize=8, fontweight='bold')
     
-    plt.colorbar(im1, ax=ax1, label='注意力权重')
+    plt.colorbar(im1, ax=ax1, label='注意力权重', shrink=0.8)
     
-    # 右图：注意力权重分布
-    ax2 = axes[1]
-    
-    # 由于只有单一注意力权重，改为展示各目标位置对源位置的注意力
-    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
-    for i in range(min(4, len(tgt_words))):
-        ax2.bar([x + i*0.2 for x in range(len(src_words))], 
+    # 右上：每个目标词的注意力分布
+    ax2 = axes[0, 1]
+    colors = plt.cm.Set1(np.linspace(0, 1, len(tgt_words)))
+    for i in range(len(tgt_words)):
+        ax2.bar([x + i*0.8/len(tgt_words) for x in range(len(src_words))], 
                avg_attn_weights[i], 
-               width=0.2, label=f'目标词: {tgt_words[i]}', color=colors[i], alpha=0.8)
+               width=0.8/len(tgt_words), 
+               label=f'{tgt_words[i]}', 
+               color=colors[i], 
+               alpha=0.85)
     
-    ax2.set_xlabel('源语言位置', fontsize=12)
-    ax2.set_ylabel('注意力权重', fontsize=12)
-    ax2.set_title('各目标词的注意力分布', fontsize=14, fontweight='bold', pad=15)
-    ax2.set_xticks([x + 0.3 for x in range(len(src_words))])
-    ax2.set_xticklabels(src_words, fontsize=11)
-    ax2.legend(loc='upper right')
-    ax2.grid(True, linestyle='--', alpha=0.7)
+    ax2.set_xlabel('源语言位置', fontsize=11)
+    ax2.set_ylabel('注意力权重', fontsize=11)
+    ax2.set_title('各目标词的注意力分布', fontsize=13, fontweight='bold', pad=10)
+    ax2.set_xticks(range(len(src_words)))
+    ax2.set_xticklabels(src_words, fontsize=10, rotation=45, ha='right')
+    ax2.legend(bbox_to_anchor=(1.02, 1), loc='upper left', fontsize=8)
+    ax2.grid(True, linestyle='--', alpha=0.6)
+    
+    # 左下：源语言各位置的注意力聚合
+    ax3 = axes[1, 0]
+    src_attention = avg_attn_weights.mean(axis=0)  # 每个源词的总注意力
+    bars = ax3.bar(src_words, src_attention, color='#1f77b4', alpha=0.8, edgecolor='black')
+    ax3.set_xlabel('源语言（英语）', fontsize=11)
+    ax3.set_ylabel('平均注意力', fontsize=11)
+    ax3.set_title('源语言各词的被关注程度', fontsize=13, fontweight='bold', pad=10)
+    ax3.tick_params(axis='x', rotation=45)
+    ax3.grid(True, linestyle='--', alpha=0.6, axis='y')
+    
+    # 在柱子上添加数值
+    for bar, val in zip(bars, src_attention):
+        ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+                f'{val:.2f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+    
+    # 右下：注意力模式分析
+    ax4 = axes[1, 1]
+    
+    # 分析每个目标词最关注哪个源词
+    most_attended = avg_attn_weights.argmax(axis=1)
+    alignment_pairs = list(zip(tgt_words, [src_words[i] for i in most_attended]))
+    
+    # 绘制对齐连线图
+    ax4.set_xlim(-0.5, max(len(src_words), len(tgt_words)) - 0.5)
+    ax4.set_ylim(-0.5, 1.5)
+    
+    # 源语言在上
+    for i, word in enumerate(src_words):
+        ax4.text(i, 1.2, word, ha='center', va='bottom', fontsize=9, fontweight='bold')
+        ax4.plot(i, 1.0, 'bo', markersize=8)
+    
+    # 目标语言在下
+    for i, word in enumerate(tgt_words):
+        ax4.text(i, 0.8, word, ha='center', va='top', fontsize=9, fontweight='bold')
+        ax4.plot(i, 1.0, 'ro', markersize=8)
+        # 画注意力连线
+        attended_src = most_attended[i]
+        weight = avg_attn_weights[i, attended_src]
+        ax4.plot([i, attended_src], [1.0, 1.0], 'g-', linewidth=weight * 5, alpha=0.6)
+    
+    ax4.set_title('注意力对齐分析\n（线条粗细表示注意力强度）', fontsize=13, fontweight='bold', pad=10)
+    ax4.axis('off')
     
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'exercise_8_translation_attention.pdf'), dpi=300, bbox_inches='tight')
     plt.show()
     
-    # 打印注意力分析
+    # ========== 打印详细分析 ==========
     print("\n【注意力分析】")
     print("-" * 60)
+    print("每个目标词的注意力分布：")
     for i, tgt_word in enumerate(tgt_words):
+        print(f"\n目标词 '{tgt_word}' 的注意力：")
+        for j, src_word in enumerate(src_words):
+            print(f"  ← '{src_word}': {avg_attn_weights[i, j]:.3f}")
         max_idx = avg_attn_weights[i].argmax()
-        max_weight = avg_attn_weights[i].max()
-        print(f"目标词 '{tgt_word}' → 主要关注源词 '{src_words[max_idx]}' (权重: {max_weight:.3f})")
+        print(f"  ★ 最关注: '{src_words[max_idx]}' (权重: {avg_attn_weights[i, max_idx]:.3f})")
     
-    print("\n✓ 分析完成：使用真实训练的Transformer模型计算并展示了注意力机制的工作原理")
+    print("\n" + "=" * 60)
+    print("✓ 分析完成：使用真实训练的Transformer模型计算并展示了注意力机制的工作原理")
 
 
 # ============================================================================
