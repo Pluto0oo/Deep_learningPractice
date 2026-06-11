@@ -956,15 +956,22 @@ def exercise_8_attention_cues_in_translation():
     print("\n【提取真实注意力权重】")
     print("-" * 60)
     
-    # 使用测试句子
+    # 使用测试句子（注意：避免撇号导致split不均匀）
     test_src = "i love you"
-    test_tgt = "je t'aime"
+    test_tgt = "je taime"
     
     src_words = test_src.split()
     tgt_words = test_tgt.split()
     
     src_ids = [src_vocab.get(w, 3) for w in src_words]
     tgt_ids = [1] + [tgt_vocab.get(w, 3) for w in tgt_words]  # <bos> + words
+    
+    # 验证形状匹配
+    assert len(src_words) == len(src_ids), f"源语言词数和ID不匹配: {len(src_words)} vs {len(src_ids)}"
+    assert len(tgt_words) == len(tgt_ids) - 1, f"目标语言词数和ID不匹配: {len(tgt_words)} vs {len(tgt_ids)}"
+    
+    print(f"源语言: {src_words} ({len(src_words)}个词)")
+    print(f"目标语言: {tgt_words} ({len(tgt_words)}个词)")
     
     src_tensor = torch.tensor([src_ids]).to(device)
     tgt_tensor = torch.tensor([tgt_ids]).to(device)
@@ -980,15 +987,26 @@ def exercise_8_attention_cues_in_translation():
         
         _ = attention_extractor(tgt_emb, src_emb, src_emb)
         
-        # 获取注意力权重 [batch, num_heads, tgt_len, src_len]
-        attn_weights = attention_extractor.attention_weights[0]  # [num_heads, tgt_len, src_len]
+        # 获取注意力权重
+        raw_attn_weights = attention_extractor.attention_weights
+        print(f"原始注意力权重形状: {raw_attn_weights.shape}")
         
-        # 平均所有头的注意力权重
-        avg_attn_weights = attn_weights.mean(dim=0).cpu().numpy()  # [tgt_len, src_len]
+        # 处理不同的形状
+        # PyTorch MultiheadAttention可能返回:
+        # - [batch, tgt_len, src_len] (只有一个头，或被压缩)
+        # - [batch, num_heads, tgt_len, src_len] (多个头)
+        
+        if len(raw_attn_weights.shape) == 4:
+            # [batch, num_heads, tgt_len, src_len] -> 平均头维度
+            avg_attn_weights = raw_attn_weights[0].mean(dim=0).cpu().numpy()  # [tgt_len, src_len]
+        elif len(raw_attn_weights.shape) == 3:
+            # [batch, tgt_len, src_len] -> 直接使用
+            avg_attn_weights = raw_attn_weights[0].cpu().numpy()  # [tgt_len, src_len]
+        else:
+            # 异常形状，抛出错误
+            raise ValueError(f"意外的注意力权重形状: {raw_attn_weights.shape}")
     
-    print(f"源语言: {src_words}")
-    print(f"目标语言: {tgt_words}")
-    print(f"注意力权重形状: {avg_attn_weights.shape}")
+    print(f"处理后注意力权重形状: {avg_attn_weights.shape}")
     
     # ========== 可视化真实注意力权重 ==========
     print("\n【可视化真实注意力权重】")
@@ -1015,20 +1033,19 @@ def exercise_8_attention_cues_in_translation():
     
     plt.colorbar(im1, ax=ax1, label='注意力权重')
     
-    # 右图：各注意力头的权重
+    # 右图：注意力权重分布
     ax2 = axes[1]
-    head_weights = attn_weights[:, :, :].mean(dim=1).cpu().numpy()  # 简化展示
     
-    # 绘制各头的注意力分布
+    # 由于只有单一注意力权重，改为展示各目标位置对源位置的注意力
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
-    for h in range(min(4, attn_weights.shape[0])):
-        head_attn = attn_weights[h].mean(dim=0).cpu().numpy()  # 每个头对源的平均注意力
-        ax2.bar([x + h*0.2 for x in range(len(src_words))], head_attn, 
-               width=0.2, label=f'头{h+1}', color=colors[h], alpha=0.8)
+    for i in range(min(4, len(tgt_words))):
+        ax2.bar([x + i*0.2 for x in range(len(src_words))], 
+               avg_attn_weights[i], 
+               width=0.2, label=f'目标词: {tgt_words[i]}', color=colors[i], alpha=0.8)
     
     ax2.set_xlabel('源语言位置', fontsize=12)
-    ax2.set_ylabel('平均注意力权重', fontsize=12)
-    ax2.set_title('各注意力头的注意力分布', fontsize=14, fontweight='bold', pad=15)
+    ax2.set_ylabel('注意力权重', fontsize=12)
+    ax2.set_title('各目标词的注意力分布', fontsize=14, fontweight='bold', pad=15)
     ax2.set_xticks([x + 0.3 for x in range(len(src_words))])
     ax2.set_xticklabels(src_words, fontsize=11)
     ax2.legend(loc='upper right')
