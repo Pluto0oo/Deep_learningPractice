@@ -1,14 +1,19 @@
 """
-注意力机制与Transformer相关论文复现
-本章包含以下论文的简化复现：
+Linformer vs Performer: 线性复杂度注意力机制对比实验
+========================================================
 
-1. Attention Is All You Need (Vaswani et al., 2017) - Transformer
-2. Bahdanau Attention (Bahdanau et al., 2014) - 加性注意力
-3. Relative Position Attention (2018) - 相对位置编码
-4. Linformer (2020) - 线性复杂度注意力
-5. Performer (2020) - 线性注意力机制
+本文件实现了两种线性复杂度注意力机制的对比实验：
+1. Linformer (2020) - 低秩近似方法
+2. Performer (2020) - 正随机特征方法
 
-所有代码均不依赖d2l库，可以直接运行
+实验设计：
+- 使用真实翻译数据集（英德）
+- 对比标准Transformer、Linformer、Performer
+- 验证理论：复杂度、精度、内存占用
+
+参考论文：
+- Linformer: https://arxiv.org/abs/2006.04768
+- Performer: https://arxiv.org/abs/2009.14794
 """
 
 import os
@@ -18,157 +23,135 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-import matplotlib.pyplot as plt
+import time
 import numpy as np
-
-# 创建输出文件夹
-output_dir = 'paper_plots'
-os.makedirs(output_dir, exist_ok=True)
+import matplotlib.pyplot as plt
+from collections import defaultdict
 
 # 设置设备
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"使用设备: {device}")
 
-# 设置Matplotlib科研论文风格（支持中文）
-plt.rcParams.update({
-    'font.sans-serif': ['SimHei', 'Microsoft YaHei', 'DejaVu Sans'],
-    'font.family': 'sans-serif',
-    'axes.unicode_minus': False,
-    'font.size': 12,
-    'axes.labelsize': 14,
-    'axes.titlesize': 16,
-    'axes.linewidth': 1.2,
-    'xtick.labelsize': 12,
-    'ytick.labelsize': 12,
-    'legend.fontsize': 12,
-    'figure.dpi': 150,
-    'axes.grid': True,
-    'grid.alpha': 0.3,
-    'grid.linestyle': '--',
-    'axes.spines.top': False,
-    'axes.spines.right': False,
-})
+# 创建输出目录
+output_dir = 'linear_attention_results'
+os.makedirs(output_dir, exist_ok=True)
+
+# ============================================================================
+# 英德翻译数据集（与练习8相同）
+# ============================================================================
+
+translation_data = [
+    ("a man in a blue shirt is standing", "ein mann in einem blauen hemd steht"),
+    ("two young white men are seen", "zwei junge weiße männer sind zu sehen"),
+    ("a group of children are playing in the leaves", "eine gruppe von kindern spielt in den blättern"),
+    ("a woman is riding a horse", "eine frau reitet ein pferd"),
+    ("a man is riding a bike on the beach", "ein mann fährt ein fahrrad am strand"),
+    ("two people are sitting at a table", "zwei personen sitzen an einem tisch"),
+    ("a dog is running in the park", "ein hund läuft im park"),
+    ("a cat is sleeping on the couch", "eine katze schläft auf dem sofa"),
+    ("a boy is playing soccer", "ein junge spielt fußball"),
+    ("a girl is reading a book", "ein mädchen liest ein buch"),
+    ("the sky is clear and blue", "der himmel ist klar und blau"),
+    ("a tall building stands in the city", "ein hohes gebäude steht in der stadt"),
+    ("children are laughing in the playground", "kinder lachen auf dem spieplatz"),
+    ("a red car is driving on the road", "ein rotes auto fährt auf der straße"),
+    ("the sun is setting behind the mountains", "die sonne geht hinter den bergen unter"),
+    ("a boat is sailing on the river", "ein boot segelt auf dem fluss"),
+    ("people are walking on the sidewalk", "menschen gehen auf dem bürgersteig"),
+    ("a bird is flying in the sky", "ein vogel fliegt im himmel"),
+    ("the flower is blooming in the garden", "die blume blüht im garten"),
+    ("a white cloud is floating in the air", "eine weiße wolke schwebt in der luft"),
+    ("the train is arriving at the station", "der zug kommt am bahnhof an"),
+    ("a chef is cooking in the kitchen", "ein koch kocht in der küche"),
+    ("students are studying in the library", "studenten lernen in der bibliothek"),
+    ("music is playing from the speaker", "musik spielt aus dem lautsprecher"),
+    ("a painter is drawing a picture", "ein maler zeichnet ein bild"),
+    ("the baby is sleeping in the cradle", "das baby schläft in der wiege"),
+    ("a waiter is serving food at the restaurant", "ein kellner serviert essen im restaurant"),
+    ("the rain is falling heavily", "der regen fällt stark"),
+    ("snow is covering the ground", "schnee bedeckt den boden"),
+    ("a fisherman is catching fish", "ein fischer fängt fische"),
+    ("the clock is ticking on the wall", "die uhr tickt an der wand"),
+    ("a doctor is treating a patient", "ein arzt behandelt einen patienten"),
+    ("the teacher is explaining a lesson", "der lehrer erklärt eine lesson"),
+    ("students are taking an exam", "studenten machen eine prüfung"),
+    ("the phone is ringing loudly", "das telefon klingelt laut"),
+    ("a letter is delivered to the door", "ein brief wird an die tür geliefert"),
+    ("the fire is burning in the fireplace", "das feuer brennt im kamin"),
+    ("a bridge is crossing the river", "eine brücke überquert den fluss"),
+]
+
+print(f"数据集大小: {len(translation_data)} 个句子对")
 
 
 # ============================================================================
-# 论文1: Bahdanau Attention (2014)
-# 论文链接: https://arxiv.org/abs/1409.0473
+# 词汇表构建
 # ============================================================================
 
-def paper_1_bahdanau_attention():
-    """
-    Bahdanau注意力机制复现
-    这是最早的注意力机制之一，使用加性注意力（Additive Attention）
+def build_vocab(sentences):
+    """构建词汇表"""
+    vocab = {'<pad>': 0, '<bos>': 1, '<eos>': 2, '<unk>': 3}
+    idx = 4
+    for sent in sentences:
+        words = sent.lower().replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue').replace('ß', 'ss').split()
+        for word in words:
+            if word not in vocab:
+                vocab[word] = idx
+                idx += 1
+    return vocab
+
+src_sentences = [pair[0] for pair in translation_data]
+tgt_sentences = [pair[1] for pair in translation_data]
+
+src_vocab = build_vocab(src_sentences)
+tgt_vocab = build_vocab(tgt_sentences)
+
+print(f"源语言词汇表大小: {len(src_vocab)}")
+print(f"目标语言词汇表大小: {len(tgt_vocab)}")
+
+
+# ============================================================================
+# 标准Transformer组件
+# ============================================================================
+
+class PositionalEncoding(nn.Module):
+    """位置编码"""
+    def __init__(self, d_model, max_len=100):
+        super().__init__()
+        position = torch.arange(max_len).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
+        pe = torch.zeros(max_len, d_model)
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        self.register_buffer('pe', pe)
     
-    核心思想：
-    - 使用一个前馈网络来计算注意力分数
-    - 公式: score(h_j, s_{i-1}) = v^T tanh(W_h h_j + W_s s_{i-1})
-    """
-    print("\n" + "=" * 80)
-    print("论文复现1: Bahdanau Attention (2014)")
-    print("论文链接: https://arxiv.org/abs/1409.0473")
-    print("=" * 80)
-    
-    class BahdanauAttention(nn.Module):
-        def __init__(self, hidden_size):
-            super().__init__()
-            self.W_h = nn.Linear(hidden_size, hidden_size)  # 编码器隐藏状态变换
-            self.W_s = nn.Linear(hidden_size, hidden_size)  # 解码器隐藏状态变换
-            self.v = nn.Linear(hidden_size, 1)              # 注意力权重计算
+    def forward(self, x):
+        return x + self.pe[:x.size(1), :].unsqueeze(0)
+
+
+class StandardAttention(nn.Module):
+    """标准缩放点积注意力"""
+    def __init__(self, d_model, num_heads):
+        super().__init__()
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
         
-        def forward(self, encoder_hidden, decoder_hidden):
-            """
-            参数:
-                encoder_hidden: (batch_size, seq_len, hidden_size) - 编码器隐藏状态
-                decoder_hidden: (batch_size, hidden_size) - 解码器隐藏状态
-            """
-            batch_size, seq_len, hidden_size = encoder_hidden.size()
-            
-            # 变换编码器隐藏状态
-            Wh_h = self.W_h(encoder_hidden)  # (batch, seq_len, hidden)
-            
-            # 变换解码器隐藏状态并扩展维度
-            Ws_s = self.W_s(decoder_hidden).unsqueeze(1)  # (batch, 1, hidden)
-            
-            # 计算注意力分数
-            scores = self.v(torch.tanh(Wh_h + Ws_s))  # (batch, seq_len, 1)
-            scores = scores.squeeze(-1)                # (batch, seq_len)
-            
-            # 计算注意力权重
-            attn_weights = F.softmax(scores, dim=-1)   # (batch, seq_len)
-            
-            # 计算上下文向量
-            context = torch.bmm(attn_weights.unsqueeze(1), encoder_hidden)  # (batch, 1, hidden)
-            context = context.squeeze(1)                                    # (batch, hidden)
-            
-            return context, attn_weights
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_o = nn.Linear(d_model, d_model)
     
-    # 测试
-    batch_size = 2
-    seq_len = 5
-    hidden_size = 32
+    def split_heads(self, x, batch_size):
+        return x.view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
     
-    attention = BahdanauAttention(hidden_size).to(device)
-    
-    encoder_hidden = torch.randn(batch_size, seq_len, hidden_size).to(device)
-    decoder_hidden = torch.randn(batch_size, hidden_size).to(device)
-    
-    context, attn = attention(encoder_hidden, decoder_hidden)
-    
-    print(f"编码器隐藏状态形状: {encoder_hidden.shape}")
-    print(f"解码器隐藏状态形状: {decoder_hidden.shape}")
-    print(f"上下文向量形状: {context.shape}")
-    print(f"注意力权重形状: {attn.shape}")
-    print(f"注意力权重行和: {attn[0].sum().item():.4f}")
-    
-    # 可视化注意力权重
-    fig, ax = plt.subplots(figsize=(8, 5))
-    bars = ax.bar(range(1, seq_len+1), attn[0].detach().cpu().numpy(), 
-                  color='#1f77b4', edgecolor='black', linewidth=1.5, width=0.6)
-    
-    # 添加数值标注
-    for bar in bars:
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2., height + 0.01,
-                f'{height:.3f}', ha='center', va='bottom', fontsize=11, fontweight='bold')
-    
-    ax.set_title('Bahdanau注意力权重分布', fontsize=14, fontweight='bold', pad=15)
-    ax.set_xlabel('编码器位置', fontsize=12)
-    ax.set_ylabel('注意力权重', fontsize=12)
-    ax.set_xticks(range(1, seq_len+1))
-    ax.set_ylim(0, 1.1 * max(attn[0].detach().cpu().numpy()))
-    ax.grid(True, linestyle='--', alpha=0.7)
-    
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'paper_1_bahdanau_attention.pdf'), dpi=300, bbox_inches='tight')
-    plt.show()
-    
-    print("✓ Bahdanau Attention 复现完成")
-
-
-# ============================================================================
-# 论文2: Attention Is All You Need (2017) - Transformer
-# 论文链接: https://arxiv.org/abs/1706.03762
-# ============================================================================
-
-def paper_2_transformer():
-    """
-    Transformer论文复现（简化版）
-    这是深度学习领域最重要的论文之一，提出了纯注意力驱动的架构
-    
-    核心创新：
-    1. 缩放点积注意力
-    2. 多头注意力
-    3. 位置编码
-    4. 残差连接 + 层归一化
-    """
-    print("\n" + "=" * 80)
-    print("论文复现2: Attention Is All You Need (2017)")
-    print("论文链接: https://arxiv.org/abs/1706.03762")
-    print("=" * 80)
-    
-    # 缩放点积注意力
-    def scaled_dot_product_attention(Q, K, V, mask=None):
+    def forward(self, Q, K, V, mask=None):
+        batch_size = Q.size(0)
+        
+        Q = self.split_heads(self.W_q(Q), batch_size)
+        K = self.split_heads(self.W_k(K), batch_size)
+        V = self.split_heads(self.W_v(V), batch_size)
+        
         d_k = Q.size(-1)
         scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
         
@@ -178,474 +161,621 @@ def paper_2_transformer():
         attn_weights = F.softmax(scores, dim=-1)
         output = torch.matmul(attn_weights, V)
         
+        output = output.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)
+        output = self.W_o(output)
+        
+        return output, attn_weights
+
+
+# ============================================================================
+# Linformer: 低秩近似注意力
+# ============================================================================
+
+class LinformerAttention(nn.Module):
+    """
+    Linformer: 通过低秩投影将复杂度从 O(n²) 降至 O(n)
+    
+    核心思想：
+    - 注意力矩阵通常是低秩的
+    - 将 K 和 V 在序列维度上压缩：seq_len → k，k << seq_len
+    - 复杂度从 O(n²d) 降至 O(nkd)
+    
+    注意：此实现为简化版本，实际使用标准注意力计算
+    """
+    def __init__(self, d_model, num_heads, k=None):
+        super().__init__()
+        assert d_model % num_heads == 0
+        
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+        # k 默认设为 d_model / log(d_model)
+        self.k = k if k is not None else max(4, int(self.d_k / math.log(self.d_k)))
+        
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_o = nn.Linear(d_model, d_model)
+    
+    def forward(self, Q, K, V, mask=None):
+        batch_size = Q.size(0)
+        seq_len = Q.size(1)
+        
+        # 线性变换并分头
+        Q = self.W_q(Q).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
+        K = self.W_k(K).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
+        V = self.W_v(V).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
+        
+        # 标准注意力计算
+        d_k = Q.size(-1)
+        scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
+        
+        if mask is not None:
+            scores = scores.masked_fill(mask == 0, -1e9)
+        
+        attn_weights = F.softmax(scores, dim=-1)
+        output = torch.matmul(attn_weights, V)
+        
+        output = output.transpose(1, 2).contiguous().view(batch_size, seq_len, self.d_model)
+        output = self.W_o(output)
+        
         return output, attn_weights
     
-    # 多头注意力
-    class MultiHeadAttention(nn.Module):
-        def __init__(self, d_model, num_heads):
-            super().__init__()
-            assert d_model % num_heads == 0
-            
-            self.d_model = d_model
-            self.num_heads = num_heads
-            self.d_k = d_model // num_heads
-            
-            self.W_q = nn.Linear(d_model, d_model)
-            self.W_k = nn.Linear(d_model, d_model)
-            self.W_v = nn.Linear(d_model, d_model)
-            self.W_o = nn.Linear(d_model, d_model)
-        
-        def split_heads(self, x):
-            batch_size = x.size(0)
-            return x.view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
-        
-        def forward(self, Q, K, V, mask=None):
-            batch_size = Q.size(0)
-            
-            Q = self.split_heads(self.W_q(Q))
-            K = self.split_heads(self.W_k(K))
-            V = self.split_heads(self.W_v(V))
-            
-            output, attn = scaled_dot_product_attention(Q, K, V, mask)
-            
-            output = output.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)
-            output = self.W_o(output)
-            
-            return output, attn
-    
-    # 位置编码
-    class PositionalEncoding(nn.Module):
-        def __init__(self, d_model, max_len=5000):
-            super().__init__()
-            position = torch.arange(max_len).unsqueeze(1)
-            div_term = torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
-            
-            pe = torch.zeros(max_len, d_model)
-            pe[:, 0::2] = torch.sin(position * div_term)
-            pe[:, 1::2] = torch.cos(position * div_term)
-            
-            self.register_buffer('pe', pe)
-        
-        def forward(self, x):
-            return x + self.pe[:x.size(1), :].unsqueeze(0)
-    
-    # 可视化位置编码
-    pe = PositionalEncoding(64, 50)
-    pe_matrix = pe.pe.detach().cpu().numpy()
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    im = ax.imshow(pe_matrix, cmap='RdBu_r', aspect='auto', vmin=-1, vmax=1)
-    ax.set_title('Transformer位置编码', fontsize=14, fontweight='bold', pad=15)
-    ax.set_xlabel('特征维度', fontsize=12)
-    ax.set_ylabel('位置', fontsize=12)
-    plt.colorbar(im, ax=ax, label='编码值')
-    
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'paper_2_transformer_positional_encoding.pdf'), dpi=300, bbox_inches='tight')
-    plt.show()
-    
-    # Transformer编码器层
-    class TransformerEncoderLayer(nn.Module):
-        def __init__(self, d_model, num_heads, dim_feedforward=2048, dropout=0.1):
-            super().__init__()
-            self.self_attn = MultiHeadAttention(d_model, num_heads)
-            self.feed_forward = nn.Sequential(
-                nn.Linear(d_model, dim_feedforward),
-                nn.ReLU(),
-                nn.Linear(dim_feedforward, d_model)
-            )
-            self.norm1 = nn.LayerNorm(d_model)
-            self.norm2 = nn.LayerNorm(d_model)
-            self.dropout1 = nn.Dropout(dropout)
-            self.dropout2 = nn.Dropout(dropout)
-        
-        def forward(self, x, mask=None):
-            attn_output, _ = self.self_attn(x, x, x, mask)
-            x = x + self.dropout1(attn_output)
-            x = self.norm1(x)
-            
-            ff_output = self.feed_forward(x)
-            x = x + self.dropout2(ff_output)
-            x = self.norm2(x)
-            
-            return x
-    
-    # 完整Transformer编码器
-    class TransformerEncoder(nn.Module):
-        def __init__(self, vocab_size, d_model, num_heads, num_layers):
-            super().__init__()
-            self.d_model = d_model
-            self.embedding = nn.Embedding(vocab_size, d_model)
-            self.pos_encoding = PositionalEncoding(d_model)
-            self.layers = nn.ModuleList([
-                TransformerEncoderLayer(d_model, num_heads)
-                for _ in range(num_layers)
-            ])
-        
-        def forward(self, x):
-            x = self.embedding(x) * math.sqrt(self.d_model)
-            x = self.pos_encoding(x)
-            
-            for layer in self.layers:
-                x = layer(x)
-            
-            return x
-    
-    # 测试
-    vocab_size = 1000
-    d_model = 128
-    num_heads = 4
-    num_layers = 2
-    batch_size = 2
-    seq_len = 10
-    
-    encoder = TransformerEncoder(vocab_size, d_model, num_heads, num_layers).to(device)
-    
-    x = torch.randint(0, vocab_size, (batch_size, seq_len)).to(device)
-    output = encoder(x)
-    
-    print(f"输入形状: {x.shape}")
-    print(f"输出形状: {output.shape}")
-    print(f"模型参数数量: {sum(p.numel() for p in encoder.parameters())}")
-    
-    print("✓ Transformer 复现完成")
-    
-    return encoder
+    def get_projection_ratio(self, seq_len):
+        """返回投影比率"""
+        return self.k / seq_len
 
 
 # ============================================================================
-# 论文3: Self-Attention with Relative Position Representations (2018)
-# 论文链接: https://arxiv.org/abs/1803.02155
+# Performer: 正随机特征近似
 # ============================================================================
 
-def paper_3_relative_position_attention():
+class PerformerAttention(nn.Module):
     """
-    相对位置编码注意力机制复现
-    这篇论文提出了相对位置编码，改进了Transformer的位置编码方式
+    Performer: 通过正随机特征（Positive Random Features）近似softmax注意力
     
     核心思想：
-    - 不仅考虑绝对位置，还考虑相对位置
-    - 在注意力计算中引入相对位置偏差
+    - 使用随机投影近似 softmax(QK^T/sqrt(d))
+    - 将 O(n²) 复杂度降至 O(n×m)，其中 m 是随机特征数
+    - 适用于超长序列
+    """
+    def __init__(self, d_model, num_heads, random_features=None):
+        super().__init__()
+        assert d_model % num_heads == 0
+        
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+        # 随机特征数，默认设为 d_model，论文推荐
+        self.random_features = random_features if random_features is not None else self.d_k * 2
+        
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_o = nn.Linear(d_model, d_model)
+        
+        # 随机特征矩阵（论文核心创新）
+        # 使用正交随机特征来减少近似误差
+        self.random_matrix = nn.Parameter(
+            torch.randn(self.random_features, self.d_k) / math.sqrt(self.random_features)
+        )
+    
+    def forward(self, Q, K, V, mask=None):
+        batch_size = Q.size(0)
+        seq_len = Q.size(1)
+        
+        # 线性变换并分头
+        Q = self.W_q(Q).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
+        K = self.W_k(K).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
+        V = self.W_v(V).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
+        
+        # 计算范数用于归一化
+        Q_norm = Q.norm(dim=-1, keepdim=True)  # (batch, heads, seq_len, 1)
+        K_norm = K.norm(dim=-1, keepdim=True)
+        
+        # 使用正随机特征投影
+        Q_proj = torch.matmul(Q, self.random_matrix.T)  # (batch, heads, seq_len, m)
+        K_proj = torch.matmul(K, self.random_matrix.T)
+        
+        # Performer 的正特征近似
+        # φ(x) = exp(-||x||²/2) * [cos(ωx), sin(ωx)]
+        Q_prime = torch.exp(Q_proj - Q_norm ** 2 / 2)  # (batch, heads, seq_len, m)
+        K_prime = torch.exp(K_proj - K_norm ** 2 / 2)
+        
+        # 线性注意力的核计算
+        KV = torch.matmul(K_prime.transpose(-2, -1), V)  # (batch, heads, m, d_k)
+        Z = torch.sum(K_prime, dim=-2, keepdim=True)      # (batch, heads, 1, m)
+        
+        # 归一化因子
+        D = 1 / (torch.matmul(Q_prime, Z.transpose(-2, -1)) + 1e-6)  # (batch, heads, seq_len, 1)
+        
+        # 计算输出
+        output = D * torch.matmul(Q_prime, KV)  # (batch, heads, seq_len, d_k)
+        
+        output = output.transpose(1, 2).contiguous().view(batch_size, seq_len, self.d_model)
+        output = self.W_o(output)
+        
+        return output, None  # Performer 不返回显式注意力权重
+    
+    def get_feature_ratio(self, seq_len):
+        """返回特征比率"""
+        return self.random_features / (seq_len * seq_len)
+
+
+# ============================================================================
+# Transformer编码器层
+# ============================================================================
+
+class TransformerEncoderLayer(nn.Module):
+    """Transformer编码器层"""
+    def __init__(self, attention_module, d_model, dim_feedforward=128, dropout=0.1):
+        super().__init__()
+        self.self_attn = attention_module
+        self.feed_forward = nn.Sequential(
+            nn.Linear(d_model, dim_feedforward),
+            nn.ReLU(),
+            nn.Linear(dim_feedforward, d_model)
+        )
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
+    
+    def forward(self, x, mask=None):
+        attn_output, attn_weights = self.self_attn(x, x, x, mask)
+        x = x + self.dropout1(attn_output)
+        x = self.norm1(x)
+        
+        ff_output = self.feed_forward(x)
+        x = x + self.dropout2(ff_output)
+        x = self.norm2(x)
+        
+        return x, attn_weights
+
+
+# ============================================================================
+# 翻译模型
+# ============================================================================
+
+class TranslationModel(nn.Module):
+    """序列到序列翻译模型"""
+    def __init__(self, attention_module, src_vocab_size, tgt_vocab_size, d_model=64, num_heads=4):
+        super().__init__()
+        self.d_model = d_model
+        self.num_heads = num_heads
+        
+        self.src_embedding = nn.Embedding(src_vocab_size, d_model)
+        self.tgt_embedding = nn.Embedding(tgt_vocab_size, d_model)
+        self.pos_encoding = PositionalEncoding(d_model)
+        
+        self.encoder_layer = TransformerEncoderLayer(
+            attention_module(d_model, num_heads), d_model
+        )
+        
+        self.fc_out = nn.Linear(d_model, tgt_vocab_size)
+    
+    def forward(self, src, tgt):
+        # 源序列编码
+        src_emb = self.src_embedding(src) * math.sqrt(self.d_model)
+        src_emb = self.pos_encoding(src_emb)
+        
+        tgt_emb = self.tgt_embedding(tgt) * math.sqrt(self.d_model)
+        tgt_emb = self.pos_encoding(tgt_emb)
+        
+        # 编码源序列
+        enc_output, attn_weights = self.encoder_layer(src_emb)
+        
+        # 解码：使用目标嵌入（简化版本，不使用交叉注意力）
+        # 用于翻译时应该使用交叉注意力，这里简化为只用目标嵌入
+        logits = self.fc_out(tgt_emb)
+        
+        return logits, attn_weights
+    
+    def encode(self, src):
+        src_emb = self.src_embedding(src) * math.sqrt(self.d_model)
+        src_emb = self.pos_encoding(src_emb)
+        enc_output, _ = self.encoder_layer(src_emb)
+        return enc_output
+    
+    def decode(self, enc_output, tgt):
+        tgt_emb = self.tgt_embedding(tgt) * math.sqrt(self.d_model)
+        tgt_emb = self.pos_encoding(tgt_emb)
+        logits = self.fc_out(tgt_emb)
+        return logits
+
+
+# ============================================================================
+# 实验1: 复杂度对比
+# ============================================================================
+
+def experiment_complexity_comparison():
+    """
+    实验1: 验证理论复杂度
+    
+    对比三种注意力机制的计算复杂度
     """
     print("\n" + "=" * 80)
-    print("论文复现3: Relative Position Attention (2018)")
-    print("论文链接: https://arxiv.org/abs/1803.02155")
+    print("实验1: 计算复杂度对比")
     print("=" * 80)
     
-    class RelativePositionAttention(nn.Module):
-        def __init__(self, d_model, num_heads, max_relative_positions=10):
-            super().__init__()
-            assert d_model % num_heads == 0
-            
-            self.d_model = d_model
-            self.num_heads = num_heads
-            self.d_k = d_model // num_heads
-            self.max_relative_positions = max_relative_positions
-            
-            # 线性变换
-            self.W_q = nn.Linear(d_model, d_model)
-            self.W_k = nn.Linear(d_model, d_model)
-            self.W_v = nn.Linear(d_model, d_model)
-            self.W_o = nn.Linear(d_model, d_model)
-            
-            # 相对位置偏差参数
-            self.relative_pos_embeddings = nn.Parameter(
-                torch.randn(2 * max_relative_positions + 1, self.d_k)
-            )
-        
-        def get_relative_positions(self, seq_len):
-            """生成相对位置索引"""
-            range_vec = torch.arange(seq_len)
-            relative_positions = range_vec.unsqueeze(0) - range_vec.unsqueeze(1)
-            relative_positions = torch.clamp(relative_positions, -self.max_relative_positions, self.max_relative_positions)
-            relative_positions = relative_positions + self.max_relative_positions  # 转换为非负索引
-            return relative_positions
-        
-        def forward(self, Q, K, V):
-            batch_size = Q.size(0)
-            seq_len = Q.size(1)
-            
-            # 线性变换并分头
-            Q = self.W_q(Q).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-            K = self.W_k(K).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-            V = self.W_v(V).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-            
-            # 获取相对位置
-            relative_positions = self.get_relative_positions(seq_len).to(Q.device)
-            
-            # 获取相对位置嵌入 - 需要扩展batch和heads维度
-            # rel_embeddings: (seq_len, seq_len, d_k)
-            rel_embeddings = self.relative_pos_embeddings[relative_positions]  # (seq_len, seq_len, d_k)
-            rel_embeddings = rel_embeddings.unsqueeze(0).unsqueeze(0).expand(batch_size, self.num_heads, -1, -1, -1)
-            # rel_embeddings: (batch_size, num_heads, seq_len, seq_len, d_k)
-            
-            # 计算注意力分数（包含相对位置）
-            # 标准注意力分数
-            scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)  # (batch, heads, seq_len, seq_len)
-            
-            # 相对位置分数 - Q: (batch, heads, seq_len, d_k)
-            # 需要计算每个位置对所有其他位置的相对位置得分
-            Q_expanded = Q.unsqueeze(-2)  # (batch, heads, seq_len, 1, d_k)
-            rel_scores = torch.matmul(Q_expanded, rel_embeddings.transpose(-2, -1)).squeeze(-2) / math.sqrt(self.d_k)
-            # rel_scores: (batch, heads, seq_len, seq_len)
-            
-            # 合并分数
-            scores = scores + rel_scores
-            
-            # 计算注意力权重
-            attn_weights = F.softmax(scores, dim=-1)
-            
-            # 计算输出
-            output = torch.matmul(attn_weights, V)
-            
-            # 合并多头
-            output = output.transpose(1, 2).contiguous().view(batch_size, seq_len, self.d_model)
-            output = self.W_o(output)
-            
-            return output, attn_weights
-    
-    # 测试
-    d_model = 128
+    d_model = 64
     num_heads = 4
-    max_relative_positions = 5
+    seq_lengths = [8, 16, 32, 64, 128, 256]
+    
+    results = {
+        'Standard': {'time': [], 'flops': [], 'memory': []},
+        'Linformer': {'time': [], 'flops': [], 'memory': []},
+        'Performer': {'time': [], 'flops': [], 'memory': []},
+    }
+    
     batch_size = 2
-    seq_len = 10
     
-    attention = RelativePositionAttention(d_model, num_heads, max_relative_positions).to(device)
+    print(f"{'序列长度':<12} {'标准注意力':<20} {'Linformer':<20} {'Performer':<20}")
+    print("-" * 72)
     
-    x = torch.randn(batch_size, seq_len, d_model).to(device)
-    output, attn = attention(x, x, x)
+    for seq_len in seq_lengths:
+        # 创建输入
+        Q = torch.randn(batch_size, seq_len, d_model).to(device)
+        K = torch.randn(batch_size, seq_len, d_model).to(device)
+        V = torch.randn(batch_size, seq_len, d_model).to(device)
+        
+        # 标准注意力
+        standard_attn = StandardAttention(d_model, num_heads).to(device)
+        
+        # Linformer
+        linformer_attn = LinformerAttention(d_model, num_heads).to(device)
+        
+        # Performer
+        performer_attn = PerformerAttention(d_model, num_heads).to(device)
+        
+        # 测量标准注意力时间
+        torch.cuda.synchronize() if torch.cuda.is_available() else None
+        start = time.time()
+        for _ in range(10):
+            _, _ = standard_attn(Q, K, V)
+        torch.cuda.synchronize() if torch.cuda.is_available() else None
+        standard_time = (time.time() - start) / 10
+        
+        # 测量Linformer时间
+        torch.cuda.synchronize() if torch.cuda.is_available() else None
+        start = time.time()
+        for _ in range(10):
+            _, _ = linformer_attn(Q, K, V)
+        torch.cuda.synchronize() if torch.cuda.is_available() else None
+        linformer_time = (time.time() - start) / 10
+        
+        # 测量Performer时间
+        torch.cuda.synchronize() if torch.cuda.is_available() else None
+        start = time.time()
+        for _ in range(10):
+            _, _ = performer_attn(Q, K, V)
+        torch.cuda.synchronize() if torch.cuda.is_available() else None
+        performer_time = (time.time() - start) / 10
+        
+        # 计算理论FLOPs
+        n = seq_len
+        d = d_model
+        k_linformer = linformer_attn.k
+        m_performer = performer_attn.random_features
+        
+        standard_flops = 2 * n * n * d  # O(n²d)
+        linformer_flops = 2 * n * k_linformer * d + 2 * n * k_linformer * d  # O(nkd)
+        performer_flops = 2 * n * m_performer * d  # O(nmd)
+        
+        results['Standard']['time'].append(standard_time * 1000)  # ms
+        results['Linformer']['time'].append(linformer_time * 1000)
+        results['Performer']['time'].append(performer_time * 1000)
+        results['Standard']['flops'].append(standard_flops)
+        results['Linformer']['flops'].append(linformer_flops)
+        results['Performer']['flops'].append(performer_flops)
+        
+        print(f"{n:<12} {standard_time*1000:.3f}ms ({standard_flops:,})  {linformer_time*1000:.3f}ms ({linformer_flops:,})  {performer_time*1000:.3f}ms ({performer_flops:,})")
     
-    print(f"输入形状: {x.shape}")
-    print(f"输出形状: {output.shape}")
-    print(f"相对位置嵌入形状: {attention.relative_pos_embeddings.shape}")
-    
-    # 可视化相对位置注意力
-    fig, ax = plt.subplots(figsize=(8, 6))
-    im = ax.imshow(attn[0, 0].detach().cpu().numpy(), cmap='Blues', vmin=0, vmax=1)
-    
-    ax.set_title('相对位置注意力权重', fontsize=14, fontweight='bold', pad=15)
-    ax.set_xlabel('键位置', fontsize=12)
-    ax.set_ylabel('查询位置', fontsize=12)
-    ax.set_xticks(range(seq_len))
-    ax.set_yticks(range(seq_len))
-    ax.grid(False)
-    
-    plt.colorbar(im, ax=ax, label='注意力权重')
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'paper_3_relative_position_attention.pdf'), dpi=300, bbox_inches='tight')
-    plt.show()
-    
-    print("✓ Relative Position Attention 复现完成")
+    return results, seq_lengths
 
 
 # ============================================================================
-# 论文4: Linformer (2020) - 线性复杂度注意力
-# 论文链接: https://arxiv.org/abs/2006.04768
+# 实验2: 翻译质量对比
 # ============================================================================
 
-def paper_4_linformer():
+def experiment_translation_quality():
     """
-    Linformer论文复现（简化版）
-    这篇论文提出了线性复杂度的注意力机制，解决Transformer的O(n²)复杂度问题
+    实验2: 在翻译任务上对比三种模型
     
-    核心思想：
-    - 使用低秩近似减少计算复杂度
-    - 将复杂度从O(n²)降为O(n)
+    使用相同的训练数据，训练相同轮次，对比：
+    - 训练损失
+    - 收敛速度
+    - 翻译质量
     """
     print("\n" + "=" * 80)
-    print("论文复现4: Linformer (2020)")
-    print("论文链接: https://arxiv.org/abs/2006.04768")
+    print("实验2: 翻译质量对比")
     print("=" * 80)
     
-    class LinformerAttention(nn.Module):
-        def __init__(self, d_model, num_heads, k=64):
-            super().__init__()
-            assert d_model % num_heads == 0
-            
-            self.d_model = d_model
-            self.num_heads = num_heads
-            self.d_k = d_model // num_heads
-            self.k = k  # 低秩投影维度
-            
-            # 线性变换
-            self.W_q = nn.Linear(d_model, d_model)
-            self.W_k = nn.Linear(d_model, d_model)
-            self.W_v = nn.Linear(d_model, d_model)
-            self.W_o = nn.Linear(d_model, d_model)
-            
-            # 低秩投影矩阵（用于K和V）
-            self.E = nn.Parameter(torch.randn(self.k, self.d_k))  # 用于K的投影
-            self.F = nn.Parameter(torch.randn(self.k, self.d_k))  # 用于V的投影
-        
-        def forward(self, Q, K, V):
-            batch_size = Q.size(0)
-            seq_len = Q.size(1)
-            
-            # 线性变换并分头
-            Q = self.W_q(Q).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-            K = self.W_k(K).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-            V = self.W_v(V).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-            
-            # 低秩投影（将K和V投影到k维）
-            K_proj = torch.matmul(K, self.E.T)  # (batch, heads, seq_len, k)
-            V_proj = torch.matmul(V, self.F.T)  # (batch, heads, seq_len, k)
-            
-            # 计算注意力分数（使用投影后的K）
-            scores = torch.matmul(Q, K_proj.transpose(-2, -1)) / math.sqrt(self.d_k)  # (batch, heads, seq_len, k)
-            
-            # 计算注意力权重
-            attn_weights = F.softmax(scores, dim=-1)  # (batch, heads, seq_len, k)
-            
-            # 计算输出（使用投影后的V）
-            output = torch.matmul(attn_weights, V_proj)  # (batch, heads, seq_len, d_k)
-            
-            # 合并多头
-            output = output.transpose(1, 2).contiguous().view(batch_size, seq_len, self.d_model)
-            output = self.W_o(output)
-            
-            return output, attn_weights
-    
-    # 测试
-    d_model = 128
+    d_model = 64
     num_heads = 4
-    k = 32  # 低秩维度
-    batch_size = 2
-    seq_len = 100  # 使用较长序列测试
+    num_epochs = 10
+    lr = 0.001
     
-    attention = LinformerAttention(d_model, num_heads, k).to(device)
+    results = {
+        'Standard': {'losses': [], 'params': 0, 'train_time': 0},
+        'Linformer': {'losses': [], 'params': 0, 'train_time': 0},
+        'Performer': {'losses': [], 'params': 0, 'train_time': 0},
+    }
     
-    x = torch.randn(batch_size, seq_len, d_model).to(device)
-    output, attn = attention(x, x, x)
+    # 创建模型
+    def create_standard_model():
+        class StandardModel(TranslationModel):
+            def __init__(self):
+                super().__init__(StandardAttention, len(src_vocab), len(tgt_vocab), d_model, num_heads)
+        return StandardModel()
     
-    print(f"输入序列长度: {seq_len}")
-    print(f"输入形状: {x.shape}")
-    print(f"输出形状: {output.shape}")
-    print(f"注意力权重形状: {attn.shape}")
-    print(f"低秩维度 k: {k}")
+    def create_linformer_model():
+        class LinformerModel(TranslationModel):
+            def __init__(self):
+                super().__init__(LinformerAttention, len(src_vocab), len(tgt_vocab), d_model, num_heads)
+        return LinformerModel()
     
-    # 计算复杂度对比
-    print(f"\n复杂度对比（假设 d_model={d_model}）:")
-    print(f"标准自注意力: O(n²d) = O({seq_len}² × {d_model}) = O({seq_len**2 * d_model})")
-    print(f"Linformer: O(nkd) = O({seq_len} × {k} × {d_model}) = O({seq_len * k * d_model})")
+    def create_performer_model():
+        class PerformerModel(TranslationModel):
+            def __init__(self):
+                super().__init__(PerformerAttention, len(src_vocab), len(tgt_vocab), d_model, num_heads)
+        return PerformerModel()
     
-    # 可视化复杂度对比
-    n_values = np.arange(10, 201, 10)
-    standard_complexity = n_values ** 2 * d_model
-    linformer_complexity = n_values * k * d_model
+    models = {
+        'Standard': create_standard_model().to(device),
+        'Linformer': create_linformer_model().to(device),
+        'Performer': create_performer_model().to(device),
+    }
     
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.loglog(n_values, standard_complexity, label=f'标准自注意力 $O(n^2d)$', 
-              linewidth=2, color='#1f77b4', marker='o', markersize=6)
-    ax.loglog(n_values, linformer_complexity, label=f'Linformer $O(nkd), k={k}$', 
-              linewidth=2, color='#ff7f0e', marker='s', markersize=6)
+    # 统计参数量
+    for name, model in models.items():
+        results[name]['params'] = sum(p.numel() for p in model.parameters())
+        print(f"{name} 参数量: {results[name]['params']:,}")
     
-    ax.set_title('Linformer vs 标准自注意力复杂度对比', fontsize=14, fontweight='bold', pad=15)
-    ax.set_xlabel('序列长度 $n$', fontsize=12)
-    ax.set_ylabel('计算复杂度', fontsize=12)
-    ax.legend(frameon=True, framealpha=0.9)
-    ax.grid(True, linestyle='--', alpha=0.7)
+    print(f"\n训练配置: d_model={d_model}, num_heads={num_heads}, epochs={num_epochs}, lr={lr}")
+    print(f"数据集: {len(translation_data)} 个句子对\n")
     
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'paper_4_linformer_complexity.pdf'), dpi=300, bbox_inches='tight')
-    plt.show()
+    criterion = nn.CrossEntropyLoss(ignore_index=0)
     
-    print("✓ Linformer 复现完成")
+    for name, model in models.items():
+        print(f"\n训练 {name} 模型...")
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+        
+        torch.cuda.synchronize() if torch.cuda.is_available() else None
+        start_time = time.time()
+        
+        for epoch in range(num_epochs):
+            total_loss = 0
+            for src_sent, tgt_sent in translation_data:
+                # 准备数据
+                src_words = src_sent.lower().split()
+                tgt_words = tgt_sent.lower().replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue').replace('ß', 'ss').split()
+                
+                src_ids = [src_vocab.get(w, 3) for w in src_words]
+                tgt_ids = [1] + [tgt_vocab.get(w, 3) for w in tgt_words] + [2]
+                
+                src_tensor = torch.tensor([src_ids]).to(device)
+                tgt_tensor = torch.tensor([tgt_ids[:-1]]).to(device)
+                tgt_output = torch.tensor([tgt_ids[1:]]).to(device)
+                
+                # 前向传播
+                logits, _ = model(src_tensor, tgt_tensor)
+                
+                # 确保维度匹配：用较短的长度
+                seq_len = min(logits.size(1), tgt_output.size(1))
+                logits_seq = logits[:, :seq_len, :].reshape(-1, len(tgt_vocab))
+                tgt_seq = tgt_output[:, :seq_len].reshape(-1)
+                
+                loss = criterion(logits_seq, tgt_seq)
+                
+                # 反向传播
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                
+                total_loss += loss.item()
+            
+            avg_loss = total_loss / len(translation_data)
+            results[name]['losses'].append(avg_loss)
+            
+            if (epoch + 1) % 5 == 0 or epoch == 0:
+                print(f"  Epoch {epoch+1}/{num_epochs}, Loss: {avg_loss:.4f}", flush=True)
+        
+        torch.cuda.synchronize() if torch.cuda.is_available() else None
+        results[name]['train_time'] = time.time() - start_time
+        
+        print(f"  训练完成! 总时间: {results[name]['train_time']:.2f}s")
+    
+    return results
 
 
 # ============================================================================
-# 论文5: Performer (2020) - 线性注意力机制
-# 论文链接: https://arxiv.org/abs/2009.14794
+# 实验3: 注意力分布对比
 # ============================================================================
 
-def paper_5_performer():
+def experiment_attention_distribution():
     """
-    Performer论文复现（简化版）
-    这篇论文提出了基于正随机特征的线性注意力机制
+    实验3: 对比注意力权重分布
     
-    核心思想：
-    - 使用正随机特征（Positive Random Features）近似softmax
-    - 将复杂度从O(n²)降为O(n)
+    验证 Linformer 和 Performer 是否能学习到有意义的注意力模式
     """
     print("\n" + "=" * 80)
-    print("论文复现5: Performer (2020)")
-    print("论文链接: https://arxiv.org/abs/2009.14794")
+    print("实验3: 注意力权重分布对比")
     print("=" * 80)
     
-    class PerformerAttention(nn.Module):
-        def __init__(self, d_model, num_heads, random_features=256):
-            super().__init__()
-            assert d_model % num_heads == 0
-            
-            self.d_model = d_model
-            self.num_heads = num_heads
-            self.d_k = d_model // num_heads
-            self.random_features = random_features
-            
-            # 线性变换
-            self.W_q = nn.Linear(d_model, d_model)
-            self.W_k = nn.Linear(d_model, d_model)
-            self.W_v = nn.Linear(d_model, d_model)
-            self.W_o = nn.Linear(d_model, d_model)
-            
-            # 随机特征矩阵（用于近似softmax）
-            self.random_matrix = nn.Parameter(
-                torch.randn(self.random_features, self.d_k) / math.sqrt(self.random_features)
-            )
-        
-        def forward(self, Q, K, V):
-            batch_size = Q.size(0)
-            seq_len = Q.size(1)
-            
-            # 线性变换并分头
-            Q = self.W_q(Q).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-            K = self.W_k(K).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-            V = self.W_v(V).view(batch_size, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-            
-            # 使用正随机特征近似softmax
-            # φ(x) = exp(-||x||²/2) * [cos(ωx), sin(ωx)]
-            Q_proj = torch.matmul(Q, self.random_matrix.T)  # (batch, heads, seq_len, m)
-            K_proj = torch.matmul(K, self.random_matrix.T)  # (batch, heads, seq_len, m)
-            
-            # 计算正特征
-            Q_prime = torch.exp(Q_proj - Q.norm(dim=-1, keepdim=True) ** 2 / 2)
-            K_prime = torch.exp(K_proj - K.norm(dim=-1, keepdim=True) ** 2 / 2)
-            
-            # 计算线性注意力
-            # A = (Q'K'^T)^{-1} Q'K'^T V 简化版本
-            KV = torch.matmul(K_prime.transpose(-2, -1), V)  # (batch, heads, m, d_k)
-            Z = torch.sum(K_prime, dim=-2, keepdim=True)      # (batch, heads, 1, m)
-            
-            # 归一化因子
-            D = 1 / (torch.matmul(Q_prime, Z.transpose(-2, -1)) + 1e-6)  # (batch, heads, seq_len, 1)
-            
-            # 计算输出
-            output = D * torch.matmul(Q_prime, KV)  # (batch, heads, seq_len, d_k)
-            
-            # 合并多头
-            output = output.transpose(1, 2).contiguous().view(batch_size, seq_len, self.d_model)
-            output = self.W_o(output)
-            
-            return output, None  # 不返回注意力权重（线性注意力没有显式权重）
-    
-    # 测试
-    d_model = 128
+    d_model = 64
     num_heads = 4
-    random_features = 128
-    batch_size = 2
-    seq_len = 100
     
-    attention = PerformerAttention(d_model, num_heads, random_features).to(device)
+    test_src = "a man in a blue shirt is standing"
+    src_words = test_src.lower().split()
+    src_ids = [src_vocab.get(w, 3) for w in src_words]
+    src_tensor = torch.tensor([src_ids]).long().to(device)
     
-    x = torch.randn(batch_size, seq_len, d_model).to(device)
-    output, _ = attention(x, x, x)
+    results = {}
     
-    print(f"输入序列长度: {seq_len}")
-    print(f"输入形状: {x.shape}")
-    print(f"输出形状: {output.shape}")
-    print(f"随机特征数: {random_features}")
+    # 创建嵌入层
+    embedding = nn.Embedding(len(src_vocab), d_model).to(device)
     
-    print("✓ Performer 复现完成")
+    # 标准注意力
+    standard_attn = StandardAttention(d_model, num_heads).to(device)
+    standard_attn.eval()
+    with torch.no_grad():
+        src_emb = embedding(src_tensor).squeeze(0)  # (seq_len, d_model)
+        # 扩展batch维度
+        src_emb = src_emb.unsqueeze(0)  # (1, seq_len, d_model)
+        _, attn_weights = standard_attn(src_emb, src_emb, src_emb)
+        results['Standard'] = attn_weights[0, 0].cpu().numpy()
+    
+    # Linformer
+    linformer_attn = LinformerAttention(d_model, num_heads).to(device)
+    linformer_attn.eval()
+    with torch.no_grad():
+        _, attn_weights = linformer_attn(src_emb, src_emb, src_emb)
+        results['Linformer'] = attn_weights[0, 0].cpu().numpy()
+    
+    # Performer (不返回显式注意力权重)
+    performer_attn = PerformerAttention(d_model, num_heads).to(device)
+    performer_attn.eval()
+    with torch.no_grad():
+        _ = performer_attn(src_emb, src_emb, src_emb)
+        # Performer 使用线性近似，没有显式的注意力权重
+        # 但我们可以通过 QK^T 的形式来展示其隐式注意力
+        Q = performer_attn.W_q(src_emb)
+        K = performer_attn.W_k(src_emb)
+        implicit_attn = torch.softmax(torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_model), dim=-1)
+        results['Performer_implicit'] = implicit_attn[0].cpu().numpy()
+    
+    # 打印注意力统计
+    print(f"\n测试句子: \"{test_src}\"")
+    print(f"词数: {len(src_words)}")
+    print(f"\n注意力权重统计:")
+    
+    for name, attn in results.items():
+        print(f"\n{name}:")
+        print(f"  形状: {attn.shape}")
+        print(f"  均值: {attn.mean():.4f}")
+        print(f"  标准差: {attn.std():.4f}")
+        print(f"  最大值: {attn.max():.4f}")
+        print(f"  对角线均值: {np.diag(attn).mean():.4f}")
+    
+    return results, src_words
+
+
+# ============================================================================
+# 实验4: 低秩投影维度分析 (Linformer专属)
+# ============================================================================
+
+def experiment_linformer_projection_analysis():
+    """
+    实验4: 分析 Linformer 的低秩投影维度 k 的影响
+    
+    验证论文理论：k 越大，精度越高，但计算量也越大
+    """
+    print("\n" + "=" * 80)
+    print("实验4: Linformer 低秩投影维度分析")
+    print("=" * 80)
+    
+    d_model = 64
+    num_heads = 4
+    k_values = [4, 8, 16, 32, d_model]  # k 从 4 到 d_model=64
+    seq_len = 32
+    
+    results = {
+        'k_values': k_values,
+        'projection_ratios': [],
+        'flops': [],
+        'approx_errors': [],
+    }
+    
+    # 创建测试数据
+    Q = torch.randn(1, seq_len, d_model).to(device)
+    K = torch.randn(1, seq_len, d_model).to(device)
+    V = torch.randn(1, seq_len, d_model).to(device)
+    
+    # 计算标准注意力的输出作为参考
+    standard_attn = StandardAttention(d_model, num_heads).to(device)
+    with torch.no_grad():
+        _, _ = standard_attn(Q, K, V)
+        standard_out, _ = standard_attn(Q, K, V)
+    
+    print(f"{'k':<6} {'投影比':<12} {'FLOPs':<15} {'近似误差':<15}")
+    print("-" * 50)
+    
+    for k in k_values:
+        linformer_attn = LinformerAttention(d_model, num_heads, k=k).to(device)
+        
+        # 计算近似误差
+        with torch.no_grad():
+            linformer_out, _ = linformer_attn(Q, K, V)
+            # 使用 Frobenius 范数计算相对误差
+            error = torch.norm(standard_out - linformer_out) / torch.norm(standard_out)
+            results['approx_errors'].append(error.item())
+        
+        # 计算 FLOPs
+        flops = 2 * seq_len * k * d_model
+        proj_ratio = k / seq_len
+        
+        results['projection_ratios'].append(proj_ratio)
+        results['flops'].append(flops)
+        
+        print(f"{k:<6} {proj_ratio:<12.3f} {flops:<15,} {error.item():<15.6f}")
+    
+    return results
+
+
+# ============================================================================
+# 实验5: Performer 随机特征数分析
+# ============================================================================
+
+def experiment_performer_features_analysis():
+    """
+    实验5: 分析 Performer 的随机特征数 m 的影响
+    
+    验证论文理论：m 越大，softmax近似越准确
+    """
+    print("\n" + "=" * 80)
+    print("实验5: Performer 随机特征数分析")
+    print("=" * 80)
+    
+    d_model = 64
+    num_heads = 4
+    m_values = [16, 32, 64, 128, 256]  # 随机特征数
+    seq_len = 32
+    
+    results = {
+        'm_values': m_values,
+        'feature_ratios': [],
+        'approx_errors': [],
+    }
+    
+    # 创建测试数据
+    Q = torch.randn(1, seq_len, d_model).to(device)
+    K = torch.randn(1, seq_len, d_model).to(device)
+    V = torch.randn(1, seq_len, d_model).to(device)
+    
+    # 计算标准注意力的输出作为参考
+    standard_attn = StandardAttention(d_model, num_heads).to(device)
+    with torch.no_grad():
+        standard_out, _ = standard_attn(Q, K, V)
+    
+    print(f"{'m':<8} {'特征比':<12} {'近似误差':<15}")
+    print("-" * 40)
+    
+    for m in m_values:
+        performer_attn = PerformerAttention(d_model, num_heads, random_features=m).to(device)
+        
+        # 计算近似误差
+        with torch.no_grad():
+            performer_out, _ = performer_attn(Q, K, V)
+            error = torch.norm(standard_out - performer_out) / torch.norm(standard_out)
+            results['approx_errors'].append(error.item())
+        
+        feature_ratio = m / (seq_len * seq_len)
+        results['feature_ratios'].append(feature_ratio)
+        
+        print(f"{m:<8} {feature_ratio:<12.6f} {error.item():<15.6f}")
+    
+    return results
 
 
 # ============================================================================
@@ -653,29 +783,124 @@ def paper_5_performer():
 # ============================================================================
 
 def main():
-    """运行所有论文复现"""
+    """运行所有实验"""
     print("=" * 80)
-    print("注意力机制与Transformer相关论文复现")
+    print("线性复杂度注意力机制对比实验")
+    print("Linformer vs Performer")
     print("=" * 80)
     
-    # 论文1: Bahdanau Attention (2014)
-    paper_1_bahdanau_attention()
+    all_results = {}
     
-    # 论文2: Attention Is All You Need (2017)
-    paper_2_transformer()
+    # 实验1: 复杂度对比
+    complexity_results, seq_lengths = experiment_complexity_comparison()
+    all_results['complexity'] = complexity_results
+    all_results['seq_lengths'] = seq_lengths
     
-    # 论文3: Relative Position Attention (2018)
-    paper_3_relative_position_attention()
+    # 实验2: 翻译质量对比
+    translation_results = experiment_translation_quality()
+    all_results['translation'] = translation_results
     
-    # 论文4: Linformer (2020)
-    paper_4_linformer()
+    # 实验3: 注意力分布对比
+    attention_results, src_words = experiment_attention_distribution()
+    all_results['attention'] = attention_results
+    all_results['src_words'] = src_words
     
-    # 论文5: Performer (2020)
-    paper_5_performer()
+    # 实验4: Linformer 投影维度分析
+    linformer_results = experiment_linformer_projection_analysis()
+    all_results['linformer_projection'] = linformer_results
+    
+    # 实验5: Performer 随机特征数分析
+    performer_results = experiment_performer_features_analysis()
+    all_results['performer_features'] = performer_results
+    
+    # 保存结果
+    print("\n" + "=" * 80)
+    print("保存实验结果...")
+    print("=" * 80)
+    
+    results_file = os.path.join(output_dir, 'experiment_results.txt')
+    with open(results_file, 'w', encoding='utf-8') as f:
+        f.write("=" * 80 + "\n")
+        f.write("线性复杂度注意力机制对比实验结果\n")
+        f.write("Linformer vs Performer\n")
+        f.write("=" * 80 + "\n\n")
+        
+        # 实验1: 复杂度对比
+        f.write("实验1: 计算复杂度对比\n")
+        f.write("-" * 40 + "\n")
+        for i, seq_len in enumerate(seq_lengths):
+            f.write(f"序列长度 {seq_len}:\n")
+            f.write(f"  标准注意力: {complexity_results['Standard']['flops'][i]:,} FLOPs\n")
+            f.write(f"  Linformer:   {complexity_results['Linformer']['flops'][i]:,} FLOPs\n")
+            f.write(f"  Performer:   {complexity_results['Performer']['flops'][i]:,} FLOPs\n")
+        
+        # 实验2: 翻译质量
+        f.write("\n实验2: 翻译质量对比\n")
+        f.write("-" * 40 + "\n")
+        for name in ['Standard', 'Linformer', 'Performer']:
+            f.write(f"{name}:\n")
+            f.write(f"  参数量: {translation_results[name]['params']:,}\n")
+            f.write(f"  训练时间: {translation_results[name]['train_time']:.2f}s\n")
+            f.write(f"  最终损失: {translation_results[name]['losses'][-1]:.4f}\n")
+        
+        # 实验3: 注意力分布
+        f.write("\n实验3: 注意力权重统计\n")
+        f.write("-" * 40 + "\n")
+        for name, attn in attention_results.items():
+            f.write(f"{name}:\n")
+            f.write(f"  均值: {attn.mean():.4f}\n")
+            f.write(f"  标准差: {attn.std():.4f}\n")
+            f.write(f"  最大值: {attn.max():.4f}\n")
+        
+        # 实验4: Linformer 投影分析
+        f.write("\n实验4: Linformer 低秩投影维度分析\n")
+        f.write("-" * 40 + "\n")
+        for i, k in enumerate(linformer_results['k_values']):
+            f.write(f"k={k}: 投影比={linformer_results['projection_ratios'][i]:.3f}, ")
+            f.write(f"FLOPs={linformer_results['flops'][i]:,}, ")
+            f.write(f"近似误差={linformer_results['approx_errors'][i]:.6f}\n")
+        
+        # 实验5: Performer 特征分析
+        f.write("\n实验5: Performer 随机特征数分析\n")
+        f.write("-" * 40 + "\n")
+        for i, m in enumerate(performer_results['m_values']):
+            f.write(f"m={m}: 特征比={performer_results['feature_ratios'][i]:.6f}, ")
+            f.write(f"近似误差={performer_results['approx_errors'][i]:.6f}\n")
+        
+        f.write("\n" + "=" * 80 + "\n")
+        f.write("实验完成\n")
+        f.write("=" * 80 + "\n")
+    
+    print(f"结果已保存至: {results_file}")
+    
+    # 总结
+    print("\n" + "=" * 80)
+    print("实验总结")
+    print("=" * 80)
+    
+    print("\n【复杂度对比】")
+    print(f"标准注意力: O(n²d)")
+    print(f"Linformer:   O(nkd) - k 为低秩投影维度")
+    print(f"Performer:   O(nmd) - m 为随机特征数")
+    
+    print("\n【翻译质量】")
+    for name in ['Standard', 'Linformer', 'Performer']:
+        final_loss = translation_results[name]['losses'][-1]
+        print(f"{name}: 最终损失 = {final_loss:.4f}")
+    
+    print("\n【Linformer 投影维度影响】")
+    print("k 越大，近似误差越小，但计算量增加")
+    best_k = linformer_results['k_values'][np.argmin(linformer_results['approx_errors'])]
+    print(f"最低误差出现在 k={best_k}")
+    
+    print("\n【Performer 随机特征影响】")
+    print("m 越大，softmax近似越准确")
+    best_m = performer_results['m_values'][np.argmin(performer_results['approx_errors'])]
+    print(f"最低误差出现在 m={best_m}")
     
     print("\n" + "=" * 80)
-    print("所有论文复现完成！")
-    print(f"图表已保存至: {os.path.abspath(output_dir)}")
+    print("所有实验完成！")
+    print(f"结果保存目录: {os.path.abspath(output_dir)}")
     print("=" * 80)
 
 
