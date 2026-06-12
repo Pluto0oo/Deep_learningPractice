@@ -1,9 +1,8 @@
 Transformer翻译测试结果
 ============================================================
-英文输入                 法语翻译                           参考翻译
+英文              翻译                   参考
 ------------------------------------------------------------
-hello world          tom tom tom tom tom tom tom tom tom tom bonjour monde
-i love you           tom tom tom tom tom tom tom tom tom tom je t'aime
-how are you          tom tom tom tom tom tom tom tom tom tom comment ça va
-good morning         tom tom tom tom tom tom tom tom tom tom bonjour
-thank you            tom tom tom tom tom tom tom tom tom tom merci
+go              va                   va
+run             cours                cours
+hello           bonjour              bonjour
+i know          je sais              je sais

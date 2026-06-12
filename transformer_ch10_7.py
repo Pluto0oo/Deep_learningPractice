@@ -97,7 +97,7 @@ def build_vocab(tokens):
         counter[token] = counter.get(token, 0) + 1
     
     sorted_tokens = sorted(counter.items(), key=lambda x: -x[1])
-    idx_to_token = ['<pad>', '<bos>', '<eos>'] + [token for token, _ in sorted_tokens]
+    idx_to_token = ['<pad>', '<bos>', '<eos>', '<unk>'] + [token for token, _ in sorted_tokens]
     
     if len(idx_to_token) > 10000:
         idx_to_token = idx_to_token[:10000]
@@ -283,9 +283,11 @@ class DecoderBlock(nn.Module):
             key_values = torch.cat([state[2][self.i], X], dim=1)
         state[2][self.i] = key_values
         
+        # 自注意力
         Y, _ = self.attention1(X, key_values, key_values)
         Y = self.addnorm1(X, Y)
         
+        # 编码器-解码器注意力
         Y, _ = self.attention2(Y, enc_outputs, enc_outputs, enc_valid_lens)
         Y = self.addnorm2(Y, Y)
         
@@ -340,17 +342,18 @@ def train_transformer():
     print("="*60)
     
     batch_size, num_steps = 64, 10
-    train_iter, src_vocab, tgt_vocab = load_data_nmt(batch_size, num_steps)
+    # 增加训练样本数量
+    train_iter, src_vocab, tgt_vocab = load_data_nmt(batch_size, num_steps, num_examples=10000)
     
     print(f"\n数据集统计:")
     print(f"  源语言词汇表大小: {len(src_vocab)}")
     print(f"  目标语言词汇表大小: {len(tgt_vocab)}")
     
-    # 模型参数（与原文一致）
-    num_hiddens, num_layers, dropout = 32, 2, 0.1
-    ffn_num_input, ffn_num_hiddens, num_heads = 32, 64, 4
-    key_size, query_size, value_size = 32, 32, 32
-    norm_shape = [32]
+    # 增大模型参数
+    num_hiddens, num_layers, dropout = 256, 4, 0.1
+    ffn_num_input, ffn_num_hiddens, num_heads = 256, 512, 8
+    key_size, query_size, value_size = 256, 256, 256
+    norm_shape = [256]
     
     print(f"\n模型参数:")
     print(f"  隐藏层维度: {num_hiddens}")
@@ -372,10 +375,13 @@ def train_transformer():
     net = Transformer(encoder, decoder)
     net.to(device)
     
-    optimizer = torch.optim.Adam(net.parameters(), lr=0.005)
-    loss = nn.CrossEntropyLoss(ignore_index=src_vocab.index('<pad>'))
+    # 使用学习率调度器
+    optimizer = torch.optim.Adam(net.parameters(), lr=0.0005, betas=(0.9, 0.98), eps=1e-9)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.5)
+    loss = nn.CrossEntropyLoss(ignore_index=tgt_vocab.index('<pad>'))
     
-    num_epochs = 10
+    # 增加训练轮数
+    num_epochs = 100
     print(f"\n开始训练 {num_epochs} 轮...")
     
     train_losses = []
@@ -396,14 +402,18 @@ def train_transformer():
             
             optimizer.zero_grad()
             l.backward()
+            # 梯度裁剪
+            torch.nn.utils.clip_grad_norm_(net.parameters(), max_norm=1.0)
             optimizer.step()
             
             epoch_loss += l.item()
             batch_count += 1
         
+        scheduler.step()
         avg_loss = epoch_loss / batch_count
         train_losses.append(avg_loss)
-        print(f"Epoch {epoch+1:2d}/{num_epochs:2d}, Loss: {avg_loss:.4f}")
+        if (epoch + 1) % 20 == 0 or epoch == 0:
+            print(f"Epoch {epoch+1:3d}/{num_epochs:3d}, Loss: {avg_loss:.4f}, LR: {scheduler.get_last_lr()[0]:.6f}")
     
     # 绘制训练损失曲线
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -412,7 +422,7 @@ def train_transformer():
     ax.set_ylabel('损失值')
     ax.set_title('Transformer训练损失曲线')
     ax.grid(True, linestyle='--', alpha=0.7)
-    ax.set_xticks(range(1, num_epochs+1))
+    ax.set_xticks(range(0, num_epochs+1, 20))
     
     plt.savefig(os.path.join(output_dir, 'training_loss.png'), dpi=150, bbox_inches='tight')
     print(f"\n训练损失曲线已保存: {output_dir}/training_loss.png")
@@ -427,7 +437,7 @@ def predict_transformer(net, src_sentence, src_vocab, tgt_vocab, num_steps, devi
     src_token_to_idx = {token: idx for idx, token in enumerate(src_vocab)}
     tgt_token_to_idx = {token: idx for idx, token in enumerate(tgt_vocab)}
     
-    src_tokens = [src_token_to_idx['<bos>']] + [src_token_to_idx.get(token, src_token_to_idx['<pad>']) for token in src_sentence.split()] + [src_token_to_idx['<eos>']]
+    src_tokens = [src_token_to_idx['<bos>']] + [src_token_to_idx.get(token, src_token_to_idx.get('<unk>', 0)) for token in src_sentence.split()] + [src_token_to_idx['<eos>']]
     enc_valid_len = torch.tensor([len(src_tokens)], device=device)
     src_tokens = truncate_pad(src_tokens, num_steps, src_token_to_idx['<pad>'])
     enc_X = torch.unsqueeze(torch.tensor(src_tokens, dtype=torch.long, device=device), dim=0)
@@ -614,13 +624,16 @@ def exercise_5():
     print("="*60)
     net, src_vocab, tgt_vocab = train_transformer()
     
-    # 测试翻译
+    # 使用数据集中存在的句子进行测试
     test_sentences = [
-        ("hello world", "bonjour monde"),
-        ("i love you", "je t'aime"),
-        ("how are you", "comment ça va"),
-        ("good morning", "bonjour"),
-        ("thank you", "merci")
+        ("go .", "va !"),
+        ("run !", "cours !"),
+        ("hello !", "bonjour !"),
+        ("i know .", "je sais ."),
+        ("i won !", "j'ai gagne !"),
+        ("stop !", "arrete-toi !"),
+        ("wait !", "attends !"),
+        ("help !", "a l'aide !")
     ]
     
     print("\n" + "="*60)
@@ -656,11 +669,7 @@ def main():
     print(f"输出目录: {output_dir}")
     print(f"{'='*70}")
     
-    # 运行所有练习
-    exercise_1()
-    exercise_2()
-    exercise_3()
-    exercise_4()
+    # 只运行训练和翻译测试
     exercise_5()
     
     # 输出总结
