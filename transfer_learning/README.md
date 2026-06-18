@@ -17,39 +17,54 @@
 
 ```
 transfer_learning/
+├── __init__.py                  # 包初始化文件
+├── main.py                      # 主程序入口（统一命令行接口）
+├── config.py                    # 集中配置管理
+├── README.md                    # 项目文档
+├── PROJECT_REPORT.md            # 项目报告
+├── DELIVERY_CHECKLIST.md        # 交付清单
+├── CODE_VERIFICATION_REPORT.md  # 代码验证报告
+├── data/                        # 数据集目录
+│   ├── mnist/MNIST/raw/         # MNIST数据集（源域）
+│   ├── mnistm/                  # MNIST-M数据集（目标域）
+│   ├── svhn/                    # SVHN数据集
+│   └── usps/                    # USPS数据集
+├── models/                      # 模型定义（统一来源）
+│   ├── dann.py                  # DANN模型定义
+│   ├── finetune.py              # 微调模型（SimpleCNN, FinetuneModel）
+│   ├── dann_model.pth           # DANN模型权重
+│   └── finetune_model.pth       # 微调模型权重
 ├── experiments/                 # 评估对比实验
+│   ├── __init__.py              # 包初始化
 │   ├── baseline_model.py        # 基线模型实验
 │   ├── cv_finetune.py           # CV微调实验
 │   ├── comparison_experiment.py # CV完整对比实验（含DANN复现）
 │   ├── bert_medical_comparison.py # BERT对比实验
-│   └── bert_simple_test.py      # BERT简化测试
-├── models/                      # 模型定义（统一来源）
-│   ├── dann.py                  # DANN模型定义
-│   └── finetune.py              # 微调模型（SimpleCNN, FinetuneModel）
-├── results/                     # 实验结果存档
-│   ├── baseline_final.pth       # 基线模型权重
-│   ├── finetune_final.pth       # 微调模型权重
-│   ├── dann_final.pth           # DANN模型权重
-│   └── experiment_results.json  # 实验结果JSON
-├── data/                        # 数据集目录
-│   ├── mnist/                   # MNIST数据集
-│   ├── mnistm/                  # MNIST-M数据集
-│   ├── svhn/                    # SVHN数据集
-│   └── usps/                    # USPS数据集
+│   ├── bert_simple_test.py      # BERT依赖测试
+│   └── mnist_to_mnistm/
+│       └── comparison_results.json # 对比实验结果
 ├── scripts/                     # 辅助脚本
 │   ├── data_loader.py           # 数据加载器
 │   ├── download_data.py         # 数据下载脚本
 │   ├── analyze_results.py       # 结果分析脚本
-│   └── result_manager.py        # 实验结果管理器
+│   ├── result_manager.py        # 实验结果管理器
+│   └── run_experiments.py       # 实验运行脚本
 ├── reports/                     # 报告文档
 │   ├── STRUCTURE_CHANGE_LOG.md  # 结构变更日志
-│   ├── experiment_report.md     # 实验报告
+│   ├── experiment_report.md     # 通用实验报告
+│   ├── experiment_report_template.md # 报告模板
 │   ├── cv_finetune_report.md    # CV微调报告
+│   ├── cv_finetune_20260618_191612_report.md # 带时间戳的报告
 │   ├── bert_medical_report.md   # BERT对比报告
 │   └── time_allocation.md       # 时间分配说明
-├── config.py                    # 配置文件
-├── main.py                      # 主程序入口
-└── README.md                    # 项目文档
+└── results/                     # 实验结果存档
+    ├── baseline_final.pth       # 基线模型权重
+    ├── finetune_final.pth       # 微调模型权重
+    ├── dann_final.pth           # DANN模型权重
+    ├── experiment_results.json  # 实验结果JSON
+    ├── experiment_results.txt   # 实验结果文本
+    ├── cv_finetune_20260618_191130/ # 实验结果目录
+    └── cv_finetune_20260618_191612/ # 实验结果目录
 ```
 
 ---
@@ -261,10 +276,7 @@ python experiments/baseline_model.py
 # 运行微调模型
 python experiments/cv_finetune.py
 
-# 运行DANN模型
-python paper_reproduction/dann/dann_model.py
-
-# 运行完整CV对比实验
+# 运行DANN模型（通过对比实验模块）
 python experiments/comparison_experiment.py
 
 # 运行BERT对比实验
@@ -527,4 +539,4 @@ MIT License
 
 ---
 
-**最后更新**: 2026年6月
+**最后更新**: 2026年6月18日
