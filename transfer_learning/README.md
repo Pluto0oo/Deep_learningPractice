@@ -22,17 +22,19 @@ transfer_learning/
 │       └── dann_model.py        # DANN模型完整实现
 ├── experiments/                 # 评估对比实验
 │   ├── baseline_model.py       # 基线模型实验
-│   ├── finetune_model.py       # 微调模型实验
+│   ├── cv_finetune.py          # CV微调实验
 │   ├── comparison_experiment.py # CV完整对比实验
 │   ├── bert_medical_comparison.py # BERT对比实验
 │   └── bert_simple_test.py     # BERT简化测试
-├── results/                     # 实验结果存档
+├── models/                      # 模型定义
+│   ├── dann.py                  # DANN模型
+│   └── finetune.py              # 微调模型（SimpleCNN, FinetuneModel）
+├── results/                     # 实验结果存档（模型权重）
 │   ├── baseline_final.pth      # 基线模型权重
 │   ├── finetune_final.pth      # 微调模型权重
 │   ├── dann_final.pth          # DANN模型权重
 │   ├── optimized_finetune_model.pth # 优化微调模型
-│   ├── experiment_results.json # 实验结果JSON
-│   └── bert_medical_report.md  # BERT对比报告
+│   └── experiment_results.json # 实验结果JSON
 ├── data/                        # 数据集目录
 │   ├── mnist/                   # MNIST数据集
 │   ├── mnistm/                  # MNIST-M数据集
@@ -45,9 +47,10 @@ transfer_learning/
 │   ├── data_loader.py           # 数据加载器
 │   ├── download_data.py         # 数据下载脚本
 │   └── analyze_results.py       # 结果分析脚本
-├── reports/                     # 实验报告
+├── reports/                     # 报告文档
 │   ├── experiment_report.md     # 实验报告
-│   └── time_allocation.md       # 时间分配说明
+│   ├── time_allocation.md       # 时间分配说明
+│   └── bert_medical_report.md   # BERT对比报告
 ├── config.py                    # 配置文件
 ├── main.py                      # 主程序入口
 └── README.md                    # 项目文档
@@ -260,7 +263,7 @@ python main.py bert
 python experiments/baseline_model.py
 
 # 运行微调模型
-python experiments/finetune_model.py
+python experiments/cv_finetune.py
 
 # 运行DANN模型
 python paper_reproduction/dann/dann_model.py
@@ -383,7 +386,7 @@ lora_config = LoraConfig(
 - `results/baseline_final.pth` - 基线模型权重
 - `results/finetune_final.pth` - 微调模型权重
 - `results/dann_final.pth` - DANN模型权重
-- `results/bert_medical_report.md` - BERT对比报告
+- `reports/bert_medical_report.md` - BERT对比报告
 - `reports/experiment_report.md` - 详细实验报告
 
 ### 查看报告

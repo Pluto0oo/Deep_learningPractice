@@ -16,7 +16,7 @@
 | `config.py` | 项目配置文件 | ✅ 已完成 |
 | `paper_reproduction/dann/dann_model.py` | DANN模型完整实现 | ✅ 已完成 |
 | `experiments/baseline_model.py` | 基线模型实验 | ✅ 已完成 |
-| `experiments/finetune_model.py` | 微调模型实验 | ✅ 已完成 |
+| `experiments/cv_finetune.py` | CV微调实验 | ✅ 已完成 |
 | `experiments/comparison_experiment.py` | CV完整对比实验 | ✅ 已完成 |
 | `experiments/bert_medical_comparison.py` | BERT对比实验 | ✅ 已完成 |
 | `models/dann.py` | DANN模型定义 | ✅ 已完成 |
@@ -51,7 +51,7 @@
 
 | 文件路径 | 功能描述 | 状态 |
 |----------|----------|------|
-| `results/bert_medical_report.md` | BERT医疗文本分类对比报告 | ✅ 已完成 |
+| `reports/bert_medical_report.md` | BERT医疗文本分类对比报告 | ✅ 已完成 |
 | `reports/experiment_report.md` | 详细实验报告 | ✅ 已完成 |
 | `reports/time_allocation.md` | 时间分配说明 | ✅ 已完成 |
 
@@ -256,7 +256,7 @@ pip install transformers peft accelerate
 - ✅ `config.py`
 - ✅ `paper_reproduction/dann/dann_model.py`
 - ✅ `experiments/baseline_model.py`
-- ✅ `experiments/finetune_model.py`
+- ✅ `experiments/cv_finetune.py`
 - ✅ `experiments/comparison_experiment.py`
 - ✅ `experiments/bert_medical_comparison.py`
 - ✅ `models/dann.py`
@@ -270,7 +270,7 @@ pip install transformers peft accelerate
 - ✅ `README.md`
 - ✅ `PROJECT_REPORT.md`
 - ✅ `DELIVERY_CHECKLIST.md`
-- ✅ `results/bert_medical_report.md`
+- ✅ `reports/bert_medical_report.md`
 - ✅ `reports/experiment_report.md`
 - ✅ `reports/time_allocation.md`
 

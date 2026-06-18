@@ -22,7 +22,7 @@ def run_finetune_experiment():
     print("=" * 60)
     print("运行微调实验")
     print("=" * 60)
-    from experiments.finetune_model import main as finetune_main
+    from experiments.cv_finetune import main as finetune_main
     finetune_main()
 
 def run_dann_experiment():
@@ -46,7 +46,7 @@ def show_bert_report():
     print("=" * 60)
     print("BERT医疗文本分类三种策略对比报告")
     print("=" * 60)
-    report_path = os.path.join(os.path.dirname(__file__), 'results', 'bert_medical_report.md')
+    report_path = os.path.join(os.path.dirname(__file__), 'reports', 'bert_medical_report.md')
     if os.path.exists(report_path):
         with open(report_path, 'r', encoding='utf-8') as f:
             print(f.read())
@@ -88,11 +88,14 @@ def show_info():
     print("│   └── dann/                   # DANN模型复现")
     print("├── experiments/                # 评估对比实验")
     print("│   ├── baseline_model.py      # 基线模型")
-    print("│   ├── finetune_model.py      # 微调模型")
+    print("│   ├── cv_finetune.py         # CV微调实验")
     print("│   ├── comparison_experiment.py # CV对比实验")
     print("│   └── bert_medical_comparison.py # BERT对比实验")
-    print("├── results/                   # 实验结果")
+    print("├── models/                     # 模型定义")
+    print("│   └── finetune.py            # 微调模型定义")
+    print("├── reports/                    # 报告文档")
     print("│   └── bert_medical_report.md # BERT对比报告")
+    print("├── results/                   # 实验结果（模型权重）")
     print("├── data/                      # 数据集")
     print("├── config.py                  # 配置文件")
     print("└── main.py                    # 主程序入口")

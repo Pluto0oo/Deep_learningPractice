@@ -131,4 +131,4 @@
 ---
 
 *报告生成时间：2026年6月*  
-*项目位置：transfer_learning/results/bert_medical_report.md*
+*项目位置：transfer_learning/reports/bert_medical_report.md*
