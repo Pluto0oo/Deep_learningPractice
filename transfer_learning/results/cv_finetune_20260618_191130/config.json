@@ -1,0 +1,20 @@
+{
+    "model": "SimpleCNN (Finetune)",
+    "task": "MNIST -> MNIST-M",
+    "method": "Fine-tuning",
+    "dataset": {
+        "source": "MNIST",
+        "target": "MNIST-M",
+        "train_samples": 10000,
+        "test_samples": 10000
+    },
+    "hyperparameters": {
+        "batch_size": 64,
+        "pretrain_epochs": 10,
+        "finetune_epochs": 5,
+        "pretrain_lr": 0.001,
+        "finetune_lr": 0.0001,
+        "optimizer": "Adam",
+        "loss_function": "CrossEntropyLoss"
+    }
+}

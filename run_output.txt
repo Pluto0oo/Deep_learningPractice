@@ -1,0 +1,86 @@
+﻿使用设备: cuda
+数据集大小: 38 个句子对
+源语言词汇表大小: 128
+目标语言词汇表大小: 139
+================================================================================
+线性复杂度注意力机制对比实验
+Linformer vs Performer
+================================================================================
+
+================================================================================
+实验1: 计算复杂度对比
+================================================================================
+序列长度         标准注意力                Linformer            Performer           
+------------------------------------------------------------------------
+8            9.003ms (8,192)  0.583ms (10,240)  9.064ms (32,768)
+16           0.629ms (32,768)  0.260ms (20,480)  1.053ms (65,536)
+32           0.798ms (131,072)  0.000ms (40,960)  1.614ms (131,072)
+64           0.762ms (524,288)  0.504ms (81,920)  0.806ms (262,144)
+128          0.862ms (2,097,152)  0.600ms (163,840)  0.900ms (524,288)
+256          0.537ms (8,388,608)  0.553ms (327,680)  0.897ms (1,048,576)
+
+================================================================================
+实验2: 翻译质量对比
+================================================================================
+Standard 参数量: 59,595
+Linformer 参数量: 59,595
+Performer 参数量: 60,107
+
+训练配置: d_model=64, num_heads=4, epochs=100, lr=0.001
+数据集: 38 个句子对
+
+
+训练 Standard 模型...
+  Epoch 20/100, Loss: 1.2570
+  Epoch 40/100, Loss: 1.1822
+  Epoch 60/100, Loss: 1.1585
+  Epoch 80/100, Loss: 1.1381
+  Epoch 100/100, Loss: 1.1194
+  训练完成! 总时间: 7.71s
+
+训练 Linformer 模型...
+  Epoch 20/100, Loss: 1.2906
+  Epoch 40/100, Loss: 1.2093
+  Epoch 60/100, Loss: 1.1838
+  Epoch 80/100, Loss: 1.1618
+  Epoch 100/100, Loss: 1.1418
+  训练完成! 总时间: 8.51s
+
+训练 Performer 模型...
+  Epoch 20/100, Loss: 1.2438
+  Epoch 40/100, Loss: 1.1866
+  Epoch 60/100, Loss: 1.1599
+  Epoch 80/100, Loss: 1.1373
+  Epoch 100/100, Loss: 1.1173
+  训练完成! 总时间: 9.83s
+
+================================================================================
+实验3: 注意力权重分布对比
+================================================================================
+python.exe : Traceback (most recent call last):
+所在位置 行:1 字符: 5
++ & { & "C:\Users\17456\anaconda3\envs\dl-gpu\python.exe" "attention_tr ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last) 
+   ::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\17456\Documents\GitHub\Deep_learningPractice\attention_transfo
+rmer_papers.py", line 904, in <module>
+    main()
+  File "C:\Users\17456\Documents\GitHub\Deep_learningPractice\attention_transfo
+rmer_papers.py", line 800, in main
+    attention_results, src_words = experiment_attention_distribution()
+  File "C:\Users\17456\Documents\GitHub\Deep_learningPractice\attention_transfo
+rmer_papers.py", line 620, in experiment_attention_distribution
+    src_emb = standard_attn.W_q(src_tensor)
+  File "C:\Users\17456\anaconda3\envs\dl-gpu\lib\site-packages\torch\nn\modules
+\module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "C:\Users\17456\anaconda3\envs\dl-gpu\lib\site-packages\torch\nn\modules
+\module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\17456\anaconda3\envs\dl-gpu\lib\site-packages\torch\nn\modules
+\linear.py", line 134, in forward
+    return F.linear(input, self.weight, self.bias)
+RuntimeError: mat1 and mat2 must have the same dtype, but got Long and Float

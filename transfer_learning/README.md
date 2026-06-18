@@ -46,7 +46,8 @@ transfer_learning/
 ├── scripts/                     # 辅助脚本
 │   ├── data_loader.py           # 数据加载器
 │   ├── download_data.py         # 数据下载脚本
-│   └── analyze_results.py       # 结果分析脚本
+│   ├── analyze_results.py       # 结果分析脚本
+│   └── result_manager.py        # 实验结果管理器（自动保存日志/指标/模型/报告）
 ├── reports/                     # 报告文档
 │   ├── experiment_report.md     # 实验报告
 │   ├── time_allocation.md       # 时间分配说明
@@ -388,6 +389,35 @@ lora_config = LoraConfig(
 - `results/dann_final.pth` - DANN模型权重
 - `reports/bert_medical_report.md` - BERT对比报告
 - `reports/experiment_report.md` - 详细实验报告
+
+### 实验结果管理器
+
+项目新增了 `scripts/result_manager.py`，提供统一的实验结果管理功能：
+
+| 功能 | 说明 |
+|------|------|
+| 自动保存 | 训练日志、评估指标、模型参数自动保存 |
+| 结构化存储 | 按实验名称和时间戳创建独立目录 |
+| 可视化生成 | 自动生成混淆矩阵等可视化结果 |
+| 报告生成 | 自动生成Markdown格式实验报告 |
+
+**输出目录结构示例**：
+```
+results/
+└── baseline_cnn_20260618_120000/
+    ├── config.json          # 实验配置
+    ├── results_summary.json # 结果摘要
+    ├── experiment_report.md # 实验报告
+    ├── logs/
+    │   └── training.log     # 训练日志
+    ├── metrics/
+    │   ├── source_test.json # 源域评估指标
+    │   └── target_test.json # 目标域评估指标
+    ├── models/
+    │   └── baseline_model.pth # 模型权重
+    └── visualizations/
+        └── confusion_matrix.png # 混淆矩阵
+```
 
 ### 查看报告
 

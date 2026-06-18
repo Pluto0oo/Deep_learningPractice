@@ -1,8 +1,12 @@
 Transformer翻译测试结果
 ============================================================
-英文              翻译                   参考
+英文输入                 法语翻译                           参考翻译
 ------------------------------------------------------------
-go              va                   va
-run             cours                cours
-hello           bonjour              bonjour
-i know          je sais              je sais
+go .                 hé hé hé hé hé hé hé hé hé hé  va !
+run !                hé hé hé hé hé hé hé hé hé hé  cours !
+hello !              hé hé hé hé hé hé hé hé hé hé  bonjour !
+i know .             hé hé hé hé hé hé hé hé hé hé  je sais .
+i won !              hé hé hé hé hé hé hé hé hé hé  j'ai gagne !
+stop !               hé hé hé hé hé hé hé hé hé hé  arrete-toi !
+wait !               hé hé hé hé hé hé hé hé hé hé  attends !
+help !               hé hé hé hé hé hé hé hé hé hé  a l'aide !

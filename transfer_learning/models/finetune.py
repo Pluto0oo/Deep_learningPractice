@@ -47,7 +47,7 @@ class SimpleCNN(nn.Module):
         )
         
         self.fc_layers = nn.Sequential(
-            nn.Linear(128 * 4 * 4, 256),
+            nn.Linear(128 * 3 * 3, 256),
             nn.ReLU(inplace=True),
             nn.Linear(256, num_classes)
         )

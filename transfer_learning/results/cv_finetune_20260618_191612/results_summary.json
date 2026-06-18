@@ -1,0 +1,166 @@
+{
+    "experiment_name": "cv_finetune",
+    "timestamp": "20260618_191612",
+    "config": {
+        "model": "SimpleCNN (Finetune)",
+        "task": "MNIST -> MNIST-M",
+        "method": "Fine-tuning",
+        "dataset": {
+            "source": "MNIST",
+            "target": "MNIST-M",
+            "train_samples": 10000,
+            "test_samples": 10000
+        },
+        "hyperparameters": {
+            "batch_size": 64,
+            "pretrain_epochs": 10,
+            "finetune_epochs": 5,
+            "pretrain_lr": 0.001,
+            "finetune_lr": 0.0001,
+            "optimizer": "Adam",
+            "loss_function": "CrossEntropyLoss"
+        }
+    },
+    "training_log": [
+        {
+            "epoch": 1,
+            "loss": 0.5128793298818504,
+            "accuracy": 0.8424,
+            "timestamp": 1781781379.7018359,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 2,
+            "loss": 0.13138309180451807,
+            "accuracy": 0.9589,
+            "timestamp": 1781781380.9760554,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 3,
+            "loss": 0.07775533710203021,
+            "accuracy": 0.9769,
+            "timestamp": 1781781382.0282767,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 4,
+            "loss": 0.05341131633865368,
+            "accuracy": 0.9829,
+            "timestamp": 1781781383.4588346,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 5,
+            "loss": 0.037845084332463565,
+            "accuracy": 0.9878,
+            "timestamp": 1781781384.7364986,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 6,
+            "loss": 0.028248530860758937,
+            "accuracy": 0.9915,
+            "timestamp": 1781781386.313251,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 7,
+            "loss": 0.020391490070926395,
+            "accuracy": 0.9936,
+            "timestamp": 1781781387.9590003,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 8,
+            "loss": 0.02413405770318031,
+            "accuracy": 0.9914,
+            "timestamp": 1781781389.162042,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 9,
+            "loss": 0.013612867080792637,
+            "accuracy": 0.9956,
+            "timestamp": 1781781390.2057252,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 10,
+            "loss": 0.020686327767620312,
+            "accuracy": 0.9933,
+            "timestamp": 1781781391.4389107,
+            "phase": "pretrain",
+            "learning_rate": 0.001
+        },
+        {
+            "epoch": 11,
+            "loss": 1.4502614379688432,
+            "accuracy": 0.5717,
+            "timestamp": 1781781393.0486805,
+            "phase": "finetune",
+            "learning_rate": 0.0001
+        },
+        {
+            "epoch": 12,
+            "loss": 0.4107345501138906,
+            "accuracy": 0.8993,
+            "timestamp": 1781781394.6052096,
+            "phase": "finetune",
+            "learning_rate": 0.0001
+        },
+        {
+            "epoch": 13,
+            "loss": 0.21406436754260094,
+            "accuracy": 0.9427,
+            "timestamp": 1781781396.1779246,
+            "phase": "finetune",
+            "learning_rate": 0.0001
+        },
+        {
+            "epoch": 14,
+            "loss": 0.15387481830681965,
+            "accuracy": 0.9575,
+            "timestamp": 1781781397.5687754,
+            "phase": "finetune",
+            "learning_rate": 0.0001
+        },
+        {
+            "epoch": 15,
+            "loss": 0.12119549629130182,
+            "accuracy": 0.9684,
+            "timestamp": 1781781398.9265552,
+            "phase": "finetune",
+            "learning_rate": 0.0001
+        }
+    ],
+    "evaluation_metrics": {
+        "target_test": {
+            "accuracy": 0.9612,
+            "correct": 9612,
+            "total": 10000
+        }
+    },
+    "model_info": {
+        "finetune_model": {
+            "path": "results\\cv_finetune_20260618_191612\\models\\finetune_model.pth",
+            "params": 390986,
+            "trainable_params": 390986
+        }
+    },
+    "system_info": {
+        "platform": "Windows",
+        "python_version": "3.10.20",
+        "cuda_available": true,
+        "cuda_device": "NVIDIA GeForce RTX 5060 Laptop GPU"
+    }
+}

@@ -12,57 +12,10 @@ import numpy as np
 import json
 import time
 import os
-from torch.autograd import Function
 
-class GradientReversalFunction(Function):
-    """梯度反转函数"""
-    @staticmethod
-    def forward(ctx, x, alpha=1.0):
-        ctx.alpha = alpha
-        return x.view_as(x)
-    
-    @staticmethod
-    def backward(ctx, grad_output):
-        return grad_output.neg() * ctx.alpha, None
-
-class DANN(nn.Module):
-    """DANN模型"""
-    def __init__(self, num_classes=10):
-        super(DANN, self).__init__()
-        self.conv = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=5, padding=2),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),
-            nn.Conv2d(32, 48, kernel_size=5, padding=2),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2)
-        )
-        self.classifier = nn.Linear(48 * 7 * 7, num_classes)
-        self.domain_class = nn.Linear(48 * 7 * 7, 2)
-    
-    def forward(self, x, alpha=1.0):
-        feat = self.conv(x).view(x.size(0), -1)
-        class_out = self.classifier(feat)
-        domain_feat = GradientReversalFunction.apply(feat, alpha)
-        domain_out = self.domain_class(domain_feat)
-        return class_out, domain_out
-
-class SimpleCNN(nn.Module):
-    """简单CNN模型"""
-    def __init__(self, num_classes=10):
-        super(SimpleCNN, self).__init__()
-        self.conv = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=5, padding=2),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),
-            nn.Conv2d(32, 48, kernel_size=5, padding=2),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2)
-        )
-        self.fc = nn.Linear(48 * 7 * 7, num_classes)
-    
-    def forward(self, x):
-        return self.fc(self.conv(x).view(x.size(0), -1))
+# 导入统一的模型定义
+from models.dann import DANN
+from models.finetune import SimpleCNN
 
 def get_loader(images, labels, batch_size=64, shuffle=True):
     """创建数据加载器"""

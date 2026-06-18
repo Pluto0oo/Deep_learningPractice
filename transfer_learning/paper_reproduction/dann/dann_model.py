@@ -3,85 +3,16 @@ DANN (Domain-Adversarial Neural Network) 论文复现
 基于论文: "Domain-Adversarial Training of Neural Networks" (ICML 2016)
 
 核心思想：通过对抗训练学习域不变特征，使特征提取器无法区分源域和目标域
+
+注意：本文件保留论文复现特定的训练逻辑，模型定义从统一位置导入
 """
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
-from torch.autograd import Function
 
-class GradientReversalFunction(Function):
-    """梯度反转函数 - DANN的核心组件"""
-    @staticmethod
-    def forward(ctx, x, alpha=1.0):
-        ctx.alpha = alpha
-        return x.view_as(x)
-    
-    @staticmethod
-    def backward(ctx, grad_output):
-        return grad_output.neg() * ctx.alpha, None
-
-class FeatureExtractor(nn.Module):
-    """特征提取器 - 提取域无关的通用特征"""
-    def __init__(self):
-        super(FeatureExtractor, self).__init__()
-        self.conv_layers = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=5, padding=2),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            
-            nn.Conv2d(32, 48, kernel_size=5, padding=2),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2)
-        )
-    
-    def forward(self, x):
-        return self.conv_layers(x)
-
-class LabelClassifier(nn.Module):
-    """标签分类器 - 预测类别标签"""
-    def __init__(self, num_classes=10):
-        super(LabelClassifier, self).__init__()
-        self.fc_layers = nn.Sequential(
-            nn.Linear(48 * 7 * 7, 100),
-            nn.ReLU(inplace=True),
-            nn.Linear(100, 100),
-            nn.ReLU(inplace=True),
-            nn.Linear(100, num_classes)
-        )
-    
-    def forward(self, x):
-        x = x.view(x.size(0), -1)
-        return self.fc_layers(x)
-
-class DomainClassifier(nn.Module):
-    """域分类器 - 区分源域和目标域"""
-    def __init__(self):
-        super(DomainClassifier, self).__init__()
-        self.fc_layers = nn.Sequential(
-            nn.Linear(48 * 7 * 7, 100),
-            nn.ReLU(inplace=True),
-            nn.Linear(100, 2)
-        )
-    
-    def forward(self, x, alpha=1.0):
-        x = x.view(x.size(0), -1)
-        x = GradientReversalFunction.apply(x, alpha)
-        return self.fc_layers(x)
-
-class DANN(nn.Module):
-    """Domain-Adversarial Neural Network"""
-    def __init__(self, num_classes=10):
-        super(DANN, self).__init__()
-        self.feature_extractor = FeatureExtractor()
-        self.label_classifier = LabelClassifier(num_classes)
-        self.domain_classifier = DomainClassifier()
-    
-    def forward(self, x, alpha=1.0):
-        features = self.feature_extractor(x)
-        class_output = self.label_classifier(features)
-        domain_output = self.domain_classifier(features, alpha)
-        return class_output, domain_output
+# 从统一位置导入DANN模型定义
+from models.dann import DANN
 
 def train_dann(model, source_loader, target_loader, device, num_epochs=20, lr=1e-3, domain_loss_weight=0.1):
     """训练DANN模型 - 优化版本"""
