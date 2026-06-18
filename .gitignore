@@ -1,0 +1,25 @@
+# 排除大数据文件
+transfer_learning/data/mnistm/*.pkl
+transfer_learning/data/svhn/*.mat
+transfer_learning/data/usps/*.bz2
+transfer_learning/data/mnist/MNIST/raw/*.gz
+transfer_learning/data/mnist/MNIST/raw/t10k-images-idx3-ubyte
+transfer_learning/data/mnist/MNIST/raw/t10k-labels-idx1-ubyte
+transfer_learning/data/mnist/MNIST/raw/train-images-idx3-ubyte
+transfer_learning/data/mnist/MNIST/raw/train-labels-idx1-ubyte
+
+# 排除模型权重文件
+transfer_learning/models/*.pth
+transfer_learning/results/*.pth
+
+# 排除Python缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 排除系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
