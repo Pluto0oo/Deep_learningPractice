@@ -348,5 +348,47 @@ def main():
     print("- 实验结果: experiments/mnist_to_mnistm/comparison_results.json")
     print("- 模型文件: results/")
 
+def run_dann_experiment():
+    """单独运行DANN实验"""
+    import os
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(project_root)
+    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"使用设备: {device}\n")
+    
+    print("=" * 60)
+    print("DANN模型实验 (域对抗神经网络)")
+    print("实验任务: MNIST -> MNIST-M")
+    print("=" * 60)
+    
+    print("\n加载数据...")
+    data = load_data()
+    
+    src_train_imgs, src_train_labels = data['src_train']
+    tgt_train_imgs, tgt_train_labels = data['tgt_train']
+    tgt_test_imgs, tgt_test_labels = data['tgt_test']
+    
+    print(f"源域训练数据: {src_train_imgs.shape}")
+    print(f"目标域训练数据: {tgt_train_imgs.shape}")
+    print(f"目标域测试数据: {tgt_test_imgs.shape}\n")
+    
+    src_loader = get_loader(src_train_imgs[:10000], src_train_labels[:10000])
+    tgt_train_loader = get_loader(tgt_train_imgs[:10000], tgt_train_labels[:10000])
+    tgt_test_loader = get_loader(tgt_test_imgs, tgt_test_labels, shuffle=False)
+    
+    dann_start = time.time()
+    dann_model = DANN(num_classes=10)
+    dann_model = train_dann(dann_model, src_loader, tgt_train_loader, device, epochs=10)
+    dann_acc = evaluate(dann_model, tgt_test_loader, device)
+    dann_time = time.time() - dann_start
+    
+    print(f"\nDANN模型目标域准确率: {dann_acc:.4f} ({dann_acc*100:.2f}%)")
+    print(f"耗时: {dann_time:.2f}秒\n")
+    
+    os.makedirs('results', exist_ok=True)
+    torch.save(dann_model.state_dict(), 'results/dann_final.pth')
+    print("模型已保存到: results/dann_final.pth")
+
 if __name__ == '__main__':
     main()
