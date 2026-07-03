@@ -1,8 +1,6 @@
 data/raw/*
 data/processed/*
-results/*
 logs/*
-reports/*
 notebooks/.ipynb_checkpoints/
 __pycache__/
 *.pyc
@@ -13,3 +11,10 @@ __pycache__/
 *.egg-info/
 .DS_Store
 Thumbs.db
+
+results/*
+!results/active_learning_imdb_20260704_003654/
+!results/active_learning_imdb_20260704_003654/**
+
+reports/*
+!reports/final_report.md
