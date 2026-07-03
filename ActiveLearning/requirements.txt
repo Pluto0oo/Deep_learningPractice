@@ -1,0 +1,17 @@
+# ActiveLearning Project Dependencies
+# ===================================
+# 
+# Environment: dl-gpu (Anaconda)
+# 
+# Most packages are already installed in the dl-gpu environment.
+# Only install the missing packages via pip.
+# 
+# Activation:
+#   conda activate dl-gpu
+# 
+# Install:
+#   pip install -r requirements.txt
+
+# Missing packages
+pytest>=7.0.0
+openpyxl>=3.1.0

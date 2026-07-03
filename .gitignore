@@ -8,9 +8,21 @@ transfer_learning/data/mnist/MNIST/raw/t10k-labels-idx1-ubyte
 transfer_learning/data/mnist/MNIST/raw/train-images-idx3-ubyte
 transfer_learning/data/mnist/MNIST/raw/train-labels-idx1-ubyte
 
+# ActiveLearning 大数据文件
+ActiveLearning/data/raw/
+ActiveLearning/data/processed/
+ActiveLearning/data/*.tar.gz
+ActiveLearning/data/*.npy
+
 # 排除模型权重文件
 transfer_learning/models/*.pth
 transfer_learning/results/*.pth
+ActiveLearning/models/*.pth
+ActiveLearning/checkpoints/
+
+# 排除日志和结果文件（可选，保留重要结果）
+ActiveLearning/logs/
+ActiveLearning/results/
 
 # 排除Python缓存
 __pycache__/
@@ -23,3 +35,6 @@ __pycache__/
 Thumbs.db
 *.swp
 *.bak
+
+# 排除VSCode配置
+.vscode/
