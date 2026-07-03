@@ -63,7 +63,7 @@ def create_committee(
 
 
 def run_active_learning_cycle(
-    learner: ActiveLearner,
+    learner,
     X_pool: np.ndarray,
     y_pool: np.ndarray,
     X_test: np.ndarray,
@@ -72,7 +72,15 @@ def run_active_learning_cycle(
     initial_ratio: float = 0.05,
     verbose: bool = True,
 ) -> dict:
-    n_samples = len(X_pool) + len(learner.X_training)
+    def get_current_labeled():
+        if hasattr(learner, 'X_training') and learner.X_training is not None:
+            return len(learner.X_training)
+        elif hasattr(learner, 'learner_list') and len(learner.learner_list) > 0:
+            return len(learner.learner_list[0].X_training)
+        return 0
+    
+    current_labeled = get_current_labeled()
+    n_samples = len(X_pool) + current_labeled
     results = {
         "accuracies": [],
         "f1_scores": [],
@@ -81,8 +89,6 @@ def run_active_learning_cycle(
     }
     
     from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-    
-    current_labeled = len(learner.X_training)
     
     for ratio in label_ratios:
         target_labeled = int(n_samples * ratio)
@@ -107,7 +113,7 @@ def run_active_learning_cycle(
             
             X_pool = np.delete(X_pool, query_idx, axis=0)
             y_pool = np.delete(y_pool, query_idx)
-            current_labeled = len(learner.X_training)
+            current_labeled = get_current_labeled()
         
         y_pred = learner.predict(X_test)
         acc = accuracy_score(y_test, y_pred)

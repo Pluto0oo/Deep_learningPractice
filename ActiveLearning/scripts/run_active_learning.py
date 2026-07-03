@@ -18,7 +18,7 @@ from src.utils import (
     create_experiment_dirs,
 )
 from src.data_loader import load_imdb_for_active_learning
-from src.active_learning import create_active_learner, run_active_learning_cycle
+from src.active_learning import create_active_learner, create_committee, run_active_learning_cycle
 
 
 def build_model(config: dict):
@@ -92,13 +92,22 @@ def run_experiment(config: dict, exp_dirs: dict, logger):
             
             logger.info(f"Initial labeled: {len(X_initial)}, Pool: {len(X_pool)}, Test: {len(X_test)}")
             
-            model = build_model(config)
-            learner = create_active_learner(
-                estimator=model,
-                X_initial=X_initial,
-                y_initial=y_initial,
-                strategy=strategy,
-            )
+            if strategy in ["max_disagreement", "consensus_entropy", "vote_entropy"]:
+                estimators = [build_model(config) for _ in range(3)]
+                learner = create_committee(
+                    estimators=estimators,
+                    X_initial=X_initial,
+                    y_initial=y_initial,
+                    strategy=strategy,
+                )
+            else:
+                model = build_model(config)
+                learner = create_active_learner(
+                    estimator=model,
+                    X_initial=X_initial,
+                    y_initial=y_initial,
+                    strategy=strategy,
+                )
             
             results = run_active_learning_cycle(
                 learner=learner,
@@ -151,6 +160,9 @@ def plot_results(stats: dict, config: dict, exp_dirs: dict):
         "entropy": "#DD8452",
         "margin": "#55A868",
         "uncertainty": "#C44E52",
+        "max_disagreement": "#8172B3",
+        "consensus_entropy": "#CCB974",
+        "vote_entropy": "#64B5CD",
     })
     
     markers = config["visualization"].get("markers", {
@@ -158,6 +170,9 @@ def plot_results(stats: dict, config: dict, exp_dirs: dict):
         "entropy": "s",
         "margin": "^",
         "uncertainty": "D",
+        "max_disagreement": "*",
+        "consensus_entropy": "x",
+        "vote_entropy": "+",
     })
     
     fig, ax = plt.subplots(figsize=tuple(config["visualization"].get("figsize", [10, 6])), dpi=config["visualization"].get("dpi", 300))
@@ -167,6 +182,9 @@ def plot_results(stats: dict, config: dict, exp_dirs: dict):
         "entropy": "熵采样",
         "margin": "边际采样",
         "uncertainty": "不确定性采样",
+        "max_disagreement": "最大分歧采样",
+        "consensus_entropy": "共识熵采样",
+        "vote_entropy": "投票熵采样",
     }
     
     for strategy, metrics in stats.items():
@@ -212,6 +230,9 @@ def generate_report(stats: dict, config: dict, exp_dir: str):
         "entropy": "熵采样",
         "margin": "边际采样",
         "uncertainty": "不确定性采样",
+        "max_disagreement": "最大分歧采样",
+        "consensus_entropy": "共识熵采样",
+        "vote_entropy": "投票熵采样",
     }
     
     report = f"""# 主动学习实验报告

@@ -17,6 +17,7 @@ active_learning:
     - entropy
     - margin
     - uncertainty
+    - max_disagreement
   label_ratios:
     - 0.1
     - 0.3
