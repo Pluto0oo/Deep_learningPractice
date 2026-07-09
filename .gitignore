@@ -38,3 +38,21 @@ Thumbs.db
 
 # 排除VSCode配置
 .vscode/
+
+# 排除大数据文件
+data/processed/
+data/raw/
+data/fra-eng/
+data/*.zip
+
+# FederatedLearning 数据集和结果
+FederatedLearning/data/
+FederatedLearning/results/
+
+# Few-Shot Meta-Learning 数据集和结果
+Few-Shot  Meta-Learning/data/
+Few-Shot  Meta-Learning/results/
+
+# 根目录下的结果和日志
+results/
+logs/

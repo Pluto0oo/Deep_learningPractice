@@ -1,0 +1,11 @@
+base: configs/base.yaml
+
+experiment:
+  algorithm: fedprox
+  num_rounds: 50
+
+model:
+  type: convnet
+
+training:
+  mu: 0.01

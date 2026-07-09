@@ -1,0 +1,36 @@
+data:
+  dataset: svhn
+  data_dir: ./data
+  batch_size: 32
+  num_workers: 0
+  num_classes: 10
+  partition_type: iid
+  dirichlet_alpha: 0.5
+
+model:
+  type: convnet
+  hidden_size: 64
+  embedding_dim: 64
+
+training:
+  optimizer: sgd
+  learning_rate: 0.01
+  momentum: 0.9
+  weight_decay: 0.0001
+  epochs: 5
+
+experiment:
+  algorithm: fedavg
+  num_clients: 3
+  num_rounds: 50
+  fraction_fit: 1.0
+  fraction_eval: 1.0
+  min_fit_clients: 3
+  min_eval_clients: 3
+  min_available_clients: 3
+  device: cuda
+  seed: 42
+
+results:
+  save_dir: ./results
+  save_plots: true

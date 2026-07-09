@@ -1,0 +1,11 @@
+base: configs/base.yaml
+
+experiment:
+  algorithm: fedavg
+  num_rounds: 50
+
+model:
+  type: resnet18
+
+training:
+  epochs: 3

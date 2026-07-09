@@ -1,0 +1,8 @@
+base: configs/base.yaml
+
+experiment:
+  algorithm: fedavg
+  num_rounds: 50
+
+model:
+  type: convnet
