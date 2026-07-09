@@ -11,7 +11,27 @@ def get_omniglot_dataset(config: Dict) -> Tuple[l2l.data.MetaDataset, l2l.data.M
     data_path = config['data']['data_path']
     download = config['data']['download']
     
-    transform = transforms.Compose([
+    augment = config['data'].get('augment', False)
+    augmentation_methods = config['data'].get('augmentation_methods', [])
+    
+    train_transform_list = [
+        transforms.Resize((config['data']['image_size'], config['data']['image_size'])),
+    ]
+    
+    if augment:
+        if 'random_rotation' in augmentation_methods:
+            train_transform_list.append(transforms.RandomRotation(15))
+        if 'random_shift' in augmentation_methods:
+            train_transform_list.append(transforms.RandomAffine(0, translate=(0.1, 0.1)))
+    
+    train_transform_list.extend([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.92206], std=[0.08426]),
+    ])
+    
+    train_transform = transforms.Compose(train_transform_list)
+    
+    test_transform = transforms.Compose([
         transforms.Resize((config['data']['image_size'], config['data']['image_size'])),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.92206], std=[0.08426]),
@@ -21,14 +41,14 @@ def get_omniglot_dataset(config: Dict) -> Tuple[l2l.data.MetaDataset, l2l.data.M
         root=data_path,
         background=True,
         download=download,
-        transform=transform,
+        transform=train_transform,
     )
     
     test_dataset = Omniglot(
         root=data_path,
         background=False,
         download=download,
-        transform=transform,
+        transform=test_transform,
     )
     
     meta_train_dataset = l2l.data.MetaDataset(train_dataset)

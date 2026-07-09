@@ -37,8 +37,9 @@ class ConvNet(nn.Module):
 class ProtoNet(nn.Module):
     def __init__(self, backbone: str = "convnet", **kwargs):
         super().__init__()
+        encoder_kwargs = {k: v for k, v in kwargs.items() if k != 'distance_metric'}
         if backbone == "convnet":
-            self.encoder = ConvNet(**kwargs)
+            self.encoder = ConvNet(**encoder_kwargs)
         elif backbone == "resnet18":
             from torchvision.models import resnet18
             self.encoder = resnet18(pretrained=False)
@@ -46,6 +47,21 @@ class ProtoNet(nn.Module):
             self.encoder.fc = nn.Linear(self.encoder.fc.in_features, kwargs.get('embedding_dim', 512))
         else:
             raise ValueError(f"Unknown backbone: {backbone}")
+        
+        self.distance_metric = kwargs.get('distance_metric', 'euclidean')
+    
+    def compute_distance(self, query_embeddings: torch.Tensor, prototypes: torch.Tensor) -> torch.Tensor:
+        if self.distance_metric == 'euclidean':
+            return torch.cdist(query_embeddings, prototypes, p=2)
+        elif self.distance_metric == 'manhattan':
+            return torch.cdist(query_embeddings, prototypes, p=1)
+        elif self.distance_metric == 'cosine':
+            query_norm = F.normalize(query_embeddings, p=2, dim=1)
+            prototype_norm = F.normalize(prototypes, p=2, dim=1)
+            cosine_sim = query_norm @ prototype_norm.T
+            return 1 - cosine_sim
+        else:
+            raise ValueError(f"Unknown distance metric: {self.distance_metric}")
     
     def forward(self, support_images: torch.Tensor, support_labels: torch.Tensor, query_images: torch.Tensor) -> torch.Tensor:
         support_embeddings = self.encoder(support_images)
@@ -61,7 +77,7 @@ class ProtoNet(nn.Module):
             prototypes.append(prototype)
         
         prototypes = torch.stack(prototypes)
-        distances = torch.cdist(query_embeddings, prototypes)
+        distances = self.compute_distance(query_embeddings, prototypes)
         logits = -distances
         
         return logits
@@ -100,6 +116,7 @@ def create_model(config: Dict) -> nn.Module:
         'hidden_size': config['model']['hidden_size'],
         'embedding_dim': config['model']['embedding_dim'],
         'num_layers': config['model'].get('num_layers', 4),
+        'distance_metric': config['model'].get('distance_metric', 'euclidean'),
     }
     
     if model_type == "protonet":
