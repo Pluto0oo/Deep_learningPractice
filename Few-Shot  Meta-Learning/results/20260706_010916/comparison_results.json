@@ -1,0 +1,10 @@
+{
+    "protonet_5way1shot": {
+        "test_loss": 0.5128473043441772,
+        "test_accuracy": 0.8400000333786011
+    },
+    "finetune_5way1shot": {
+        "test_loss": 1.910101056098938,
+        "test_accuracy": 0.48000001907348633
+    }
+}

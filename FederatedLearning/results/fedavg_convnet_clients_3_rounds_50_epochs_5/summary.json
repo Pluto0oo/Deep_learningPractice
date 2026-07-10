@@ -1,0 +1,53 @@
+{
+    "config": {
+        "data": {
+            "dataset": "svhn",
+            "data_dir": "./data",
+            "batch_size": 32,
+            "num_workers": 0,
+            "num_classes": 10,
+            "partition_type": "iid",
+            "dirichlet_alpha": 0.5
+        },
+        "model": {
+            "type": "convnet",
+            "hidden_size": 64,
+            "embedding_dim": 64
+        },
+        "training": {
+            "optimizer": "sgd",
+            "learning_rate": 0.01,
+            "momentum": 0.9,
+            "weight_decay": 0.0001,
+            "epochs": 5
+        },
+        "experiment": {
+            "algorithm": "fedavg",
+            "num_clients": 3,
+            "num_rounds": 50,
+            "fraction_fit": 1.0,
+            "fraction_eval": 1.0,
+            "min_fit_clients": 3,
+            "min_eval_clients": 3,
+            "min_available_clients": 3,
+            "device": "cuda",
+            "seed": 42
+        },
+        "results": {
+            "save_dir": "./results",
+            "save_plots": true
+        }
+    },
+    "final_results": {
+        "round": 50,
+        "test_loss": 0.44312525699517413,
+        "test_acc": 0.930700676090965
+    },
+    "best_results": {
+        "round": 47,
+        "test_loss": 0.49146145787744566,
+        "test_acc": 0.932198832206515
+    },
+    "avg_acc": 0.9116622678573579,
+    "std_acc": 0.11482179638597972
+}

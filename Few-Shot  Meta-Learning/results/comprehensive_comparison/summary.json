@@ -1,0 +1,56 @@
+{
+    "20260706_010731": {
+        "name": "finetune_5way1shot",
+        "model_type": "finetune",
+        "backbone": "convnet",
+        "train_ways": 5,
+        "train_shots": 1,
+        "test_accuracy": 0.48000001907348633,
+        "test_accuracy_std": 0
+    },
+    "20260706_010815": {
+        "name": "protonet_5way1shot",
+        "model_type": "protonet",
+        "backbone": "convnet",
+        "train_ways": 5,
+        "train_shots": 1,
+        "test_accuracy": 0.8400000333786011,
+        "test_accuracy_std": 0
+    },
+    "20260706_010916_finetune_5way1shot": {
+        "name": "finetune_5way1shot",
+        "model_type": "finetune",
+        "backbone": "convnet",
+        "train_ways": 5,
+        "train_shots": 1,
+        "test_accuracy": 0.48000001907348633,
+        "test_accuracy_std": 0
+    },
+    "20260706_010916_protonet_5way1shot": {
+        "name": "protonet_5way1shot",
+        "model_type": "protonet",
+        "backbone": "convnet",
+        "train_ways": 5,
+        "train_shots": 1,
+        "test_accuracy": 0.8400000333786011,
+        "test_accuracy_std": 0
+    },
+    "comprehensive_comparison_finetune_5way1shot": {
+        "name": "finetune_5way1shot",
+        "model_type": "finetune",
+        "backbone": "convnet",
+        "train_ways": 5,
+        "train_shots": 1,
+        "test_accuracy": 0.4933333396911621,
+        "test_accuracy_std": 0
+    },
+    "comprehensive_comparison_protonet_5way1shot": {
+        "name": "protonet_5way1shot",
+        "model_type": "protonet",
+        "backbone": "convnet",
+        "train_ways": 5,
+        "train_shots": 1,
+        "test_accuracy": 0.8266667127609253,
+        "test_accuracy_std": 0
+    }
+}

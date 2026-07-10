@@ -1,0 +1,31 @@
+# Experiment Summary: finetune_5way5shot
+
+## Configuration
+- **Experiment ID**: 20260706_181613
+- **Seed**: 42
+- **Repeat Times**: 5
+- **Device**: cuda
+
+## Data Configuration
+- **Dataset**: omniglot
+- **Train Ways**: 5
+- **Train Shots**: 5
+- **Test Ways**: 5
+- **Test Shots**: 5
+
+## Model Configuration
+- **Model Type**: finetune
+- **Backbone**: convnet
+- **Hidden Size**: 64
+- **Embedding Dim**: 64
+
+## Training Configuration
+- **Method**: finetune
+- **Meta LR**: 0.001
+- **Fast LR**: 0.1
+- **Epochs**: 100
+- **Meta Batch Size**: 1
+
+## Results
+- **test_loss**: 1.6312 (±0.3439)
+- **test_accuracy**: 0.3573 (±0.0791)

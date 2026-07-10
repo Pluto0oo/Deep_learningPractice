@@ -1,0 +1,7 @@
+Experiment,Model,Backbone,Ways,Shots,Accuracy,Std
+finetune_5way1shot,finetune,convnet,5,1,0.4800,0.0000
+protonet_5way1shot,protonet,convnet,5,1,0.8400,0.0000
+finetune_5way1shot,finetune,convnet,5,1,0.4800,0.0000
+protonet_5way1shot,protonet,convnet,5,1,0.8400,0.0000
+finetune_5way1shot,finetune,convnet,5,1,0.4933,0.0000
+protonet_5way1shot,protonet,convnet,5,1,0.8267,0.0000
