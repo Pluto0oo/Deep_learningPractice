@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.eggs/
+*.egg-info/
+dist/
+build/
+*.log
+*.npy
+*.pth
+*.zip
+data/
+results/plots/
+results/models/
