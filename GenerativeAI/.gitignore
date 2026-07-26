@@ -1,0 +1,12 @@
+*.pyc
+__pycache__/
+*.egg-info/
+.eggs/
+*.log
+data/
+results/checkpoints/
+*.npy
+*.pth
+.DS_Store
+.vscode/
+.idea/
