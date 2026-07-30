@@ -1,77 +1,114 @@
-# Reinforcement Learning Project
+# 强化学习实验项目
 
-This project implements Deep Q-Network (DQN) and Behavioral Cloning for the CartPole environment, with comprehensive evaluation and visualization.
+本项目在CartPole环境中实现深度Q网络（DQN）和行为克隆（Behavioral Cloning, BC），并包含完整的评估和可视化分析。
 
-## Project Structure
+## 项目结构
 
 ```
 ReinforcementLearning/
-├── configs/              # Configuration files (YAML)
-├── src/                  # Core source code
-│   ├── models.py         # Neural network models
-│   ├── data_collector.py # Expert data collection
-│   ├── trainer.py        # Behavioral Cloning trainer
-│   ├── evaluator.py      # Evaluation module
-│   ├── visualization.py  # Result visualization
-│   └── config.py         # Configuration loader
-├── scripts/              # Execution scripts
-│   ├── train_dqn.py      # Train DQN agent
-│   ├── collect_expert_data.py # Collect expert demonstrations
-│   ├── train_bc.py       # Train Behavioral Cloning model
-│   ├── evaluate.py       # Evaluate and compare models
-│   ├── train_prioritized_dqn.py # Prioritized Experience Replay
-│   └── run_full_experiment.py   # Run full experiment pipeline
-├── results/              # Experiment results
-├── data/                 # Expert data storage
-├── docs/                 # Documentation
-├── requirements.txt      # Dependencies
-└── .gitignore            # Git ignore rules
+├── configs/              # 配置文件 (YAML)
+├── src/                  # 核心源代码
+│   ├── models.py         # 神经网络模型
+│   ├── data_collector.py # 专家数据收集
+│   ├── trainer.py        # 行为克隆训练器
+│   ├── evaluator.py      # 评估模块
+│   ├── visualization.py  # 结果可视化
+│   └── config.py         # 配置加载器
+├── scripts/              # 执行脚本
+│   ├── train_dqn.py      # 训练DQN智能体
+│   ├── collect_expert_data.py # 收集专家示范数据
+│   ├── train_bc.py       # 训练行为克隆模型
+│   ├── evaluate.py       # 评估和对比模型
+│   ├── train_prioritized_dqn.py # 优先经验回放
+│   └── run_full_experiment.py   # 运行完整实验流程
+├── results/              # 实验结果
+│   ├── training.log      # 训练日志
+│   ├── evaluation_results.npy # 评估结果数据
+│   ├── bc_accuracy_history.npy # BC训练准确率历史
+│   ├── bc_loss_history.npy     # BC训练损失历史
+│   ├── dqn_cartpole.zip  # DQN模型
+│   ├── bc_cartpole.pth   # BC模型
+│   └── plots/            # 可视化图表
+│       ├── reward_comparison.png   # 奖励对比图
+│       ├── reward_distribution.png # 奖励分布图
+│       └── confidence_interval.png # 置信区间图
+├── data/                 # 专家数据存储
+├── docs/                 # 文档
+│   ├── experiment_principle.md  # 实验原理与结果分析
+│   └── data_analysis.md         # 数据分析报告
+├── requirements.txt      # 依赖
+└── .gitignore            # Git忽略规则
 ```
 
-## Installation
+## 安装
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Quick Start
+## 快速开始
 
-### Run Full Experiment Pipeline
+### 运行完整实验流程
 
 ```bash
 python scripts/run_full_experiment.py --config configs/base.yaml
 ```
 
-### Step-by-Step Execution
+### 分步执行
 
-1. **Train DQN Agent**
+1. **训练DQN智能体**
 ```bash
 python scripts/train_dqn.py --config configs/base.yaml
 ```
 
-2. **Collect Expert Data**
+2. **收集专家数据**
 ```bash
 python scripts/collect_expert_data.py --config configs/base.yaml
 ```
 
-3. **Train Behavioral Cloning**
+3. **训练行为克隆模型**
 ```bash
 python scripts/train_bc.py --config configs/base.yaml
 ```
 
-4. **Evaluate Models**
+4. **评估模型**
 ```bash
 python scripts/evaluate.py --config configs/base.yaml
 ```
 
-### Paper Reproduction Experiments
+### 论文复现实验
 
-**Prioritized Experience Replay (PER)**
+**优先经验回放（Prioritized Experience Replay, PER）**
 ```bash
 python scripts/train_prioritized_dqn.py
 ```
 
-## Dependencies
+## 实验结果
+
+### 评估结果对比（10轮评估平均值）
+
+| 方法 | 平均奖励 | 标准差 | 最大奖励 | 最小奖励 |
+|------|----------|--------|----------|----------|
+| DQN | **107.3** | 2.79 | 112.0 | 103.0 |
+| BC | 106.7 | 3.16 | **113.0** | 103.0 |
+
+### BC训练过程
+
+| 指标 | 初始值 | 最终值 | 最优值 |
+|------|--------|--------|--------|
+| 训练准确率 | 0.8146 | 0.9677 | **0.9684** (Epoch 97) |
+| 训练损失 | 0.4155 | 0.0788 | **0.0771** (Epoch 98) |
+
+### 关键发现
+
+1. **DQN与BC性能接近**：平均奖励仅差0.6（107.3 vs 106.7），表明BC在简单环境中可媲美DQN
+2. **BC训练收敛稳定**：100轮内准确率从81.5%提升至96.8%，损失降至0.077
+3. **BC波动略大**：标准差3.16 > DQN的2.79，反映分布偏移的影响
+4. **两种方法均未达最大值500**：可能因训练步数不足或超参数需调优
+
+详细数据分析请参阅 [docs/data_analysis.md](docs/data_analysis.md)
+
+## 依赖
 
 - stable-baselines3[extra] == 2.0.0
 - gymnasium == 0.29.1
@@ -85,29 +122,29 @@ python scripts/train_prioritized_dqn.py
 - pytest == 8.2.0
 - scikit-learn == 1.4.1
 
-## Experiment Description
+## 实验说明
 
-### Deep Q-Network (DQN)
-- Uses MlpPolicy with 2 hidden layers
-- Experience replay buffer (1M capacity)
-- Target network updates every 10,000 steps
-- Training frequency: every 4 steps
-- Total training: 1M timesteps
+### 深度Q网络（DQN）
+- 使用MlpPolicy，2个隐藏层
+- 经验回放缓冲区（容量1M）
+- 目标网络每10,000步更新
+- 训练频率：每4步
+- 总训练步数：1,000,000
 
-### Behavioral Cloning (BC)
-- Supervised learning approach
-- Trained on expert demonstrations from DQN
-- 2-layer MLP with 128 hidden units
-- Cross-entropy loss
-- 100 training epochs
+### 行为克隆（BC）
+- 监督学习方法
+- 基于DQN的专家示范训练
+- 2层MLP，128个隐藏单元
+- 交叉熵损失
+- 100个训练轮次
 
-### Evaluation Metrics
-- Average reward over 10 episodes
-- Standard deviation of rewards
-- Average episode length
-- 95% confidence intervals
+### 评估指标
+- 10轮平均奖励
+- 奖励标准差
+- 平均回合长度
+- 95%置信区间
 
-## Paper References
+## 参考文献
 
 1. Mnih V, Kavukcuoglu K, Silver D, et al. Human-level control through deep reinforcement learning[J]. Nature, 2015, 518(7540): 529-533.
 
@@ -117,6 +154,6 @@ python scripts/train_prioritized_dqn.py
 
 4. Levine S, Finn C, Darrell T, et al. End-to-end training of deep visuomotor policies[J]. Journal of Machine Learning Research, 2016, 17(1): 1334-1373.
 
-## License
+## 许可证
 
 MIT License
