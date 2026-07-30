@@ -6,10 +6,11 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-*.log
-*.npy
-*.pth
 *.zip
 data/
-results/plots/
 results/models/
+
+# 允许上传以下结果文件:
+# - *.log: 训练日志 (training.log)
+# - *.npy: 实验结果数据
+# - results/plots/: 可视化图表 (PNG)
