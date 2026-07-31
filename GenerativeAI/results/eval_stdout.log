@@ -1,0 +1,38 @@
+Using device: cuda
+GPU: NVIDIA GeForce RTX 5060 Laptop GPU
+
+=== Loading Inception v3 ===
+Inception v3 loaded
+
+=== Loading real data (CIFAR-10) ===
+Real samples: torch.Size([1000, 3, 32, 32])
+
+=== Computing real data features ===
+Real: mu=(1000,), sigma=(1000, 1000)
+
+=== Evaluating VAE ===
+VAE checkpoint loaded from c:\Users\17456\Documents\GitHub\Deep_learningPractice\GenerativeAI\results\checkpoints\vae_model.pth
+VAE samples: torch.Size([512, 3, 32, 32])
+VAE - FID: 1472.65, IS: 2.23±0.10, P: 0.0767, R: 0.0000
+
+=== Evaluating GAN ===
+GAN checkpoint loaded from c:\Users\17456\Documents\GitHub\Deep_learningPractice\GenerativeAI\results\checkpoints\gan_model.pth
+GAN samples: torch.Size([512, 3, 32, 32])
+GAN - FID: 351.53, IS: 3.61±0.41, P: 0.4000, R: 0.7033
+
+=== Evaluating Diffusion ===
+Diffusion UNet loaded from c:\Users\17456\Documents\GitHub\Deep_learningPractice\GenerativeAI\results\checkpoints\diffusion_unet
+Diffusion scheduler loaded from c:\Users\17456\Documents\GitHub\Deep_learningPractice\GenerativeAI\results\checkpoints\diffusion_scheduler
+Diffusion samples: torch.Size([500, 3, 32, 32])
+Diffusion - FID: 978.10, IS: 2.03±0.06, P: 0.8100, R: 0.0000
+
+=== Summary ===
+Model        FID        IS              Precision    Recall      
+-----------------------------------------------------------------
+VAE          1472.65    2.23±0.10     0.0767       0.0000      
+GAN          351.53     3.61±0.41     0.4000       0.7033      
+Diffusion    978.10     2.03±0.06     0.8100       0.0000      
+
+Comparison plot saved to results/plots/comparison.png
+
+Evaluation complete!

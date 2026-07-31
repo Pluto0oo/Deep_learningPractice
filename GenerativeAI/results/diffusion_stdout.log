@@ -1,0 +1,41 @@
+Using device: cuda
+GPU: NVIDIA GeForce RTX 5060 Laptop GPU
+Loading CIFAR-10 dataset...
+Dataset loaded: 50000 samples
+Model params: 15,724,931
+Starting diffusion model training...
+  Epoch 1 Step 100/391: loss=0.4158
+  Epoch 1 Step 200/391: loss=0.1250
+  Epoch 1 Step 300/391: loss=0.1002
+Epoch 1/5 | Avg Loss: 0.3119
+  Generating samples after epoch 1...
+  Samples saved
+  Epoch 2 Step 100/391: loss=0.0569
+  Epoch 2 Step 200/391: loss=0.0497
+  Epoch 2 Step 300/391: loss=0.0458
+Epoch 2/5 | Avg Loss: 0.0541
+  Generating samples after epoch 2...
+  Samples saved
+  Epoch 3 Step 100/391: loss=0.0447
+  Epoch 3 Step 200/391: loss=0.0420
+  Epoch 3 Step 300/391: loss=0.0400
+Epoch 3/5 | Avg Loss: 0.0441
+  Generating samples after epoch 3...
+  Samples saved
+  Epoch 4 Step 100/391: loss=0.0413
+  Epoch 4 Step 200/391: loss=0.0392
+  Epoch 4 Step 300/391: loss=0.0376
+Epoch 4/5 | Avg Loss: 0.0409
+  Generating samples after epoch 4...
+  Samples saved
+  Epoch 5 Step 100/391: loss=0.0397
+  Epoch 5 Step 200/391: loss=0.0380
+  Epoch 5 Step 300/391: loss=0.0367
+Epoch 5/5 | Avg Loss: 0.0396
+  Generating samples after epoch 5...
+  Samples saved
+Training complete. Saving final results...
+Final 64 samples saved
+Loss plot saved
+Diffusion checkpoints saved
+Diffusion experiment complete!

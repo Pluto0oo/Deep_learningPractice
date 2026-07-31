@@ -1,0 +1,14 @@
+Using device: cuda
+Loading MNIST dataset...
+Dataset loaded: 60000 samples
+Starting training...
+Epoch 1/5, Loss: 193.7286
+Epoch 2/5, Loss: 142.3472
+Epoch 3/5, Loss: 127.0171
+Epoch 4/5, Loss: 120.2220
+Epoch 5/5, Loss: 116.0975
+Training complete. Generating samples...
+Generated samples saved
+Loss plot saved
+Model checkpoint saved
+VAE experiment complete!

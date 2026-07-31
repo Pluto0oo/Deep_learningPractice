@@ -1,0 +1,98 @@
+Using device: cuda
+GPU: NVIDIA GeForce RTX 5060 Laptop GPU
+Generator params: 3,448,576
+Discriminator params: 2,637,312
+Loading CIFAR-10 dataset...
+CIFAR-10 loaded: 50000 samples
+Using dataset: CIFAR-10
+Starting DCGAN training...
+  Epoch 1 Batch 100/391: D=0.1096 G=6.0175
+  Epoch 1 Batch 200/391: D=0.7107 G=4.6110
+  Epoch 1 Batch 300/391: D=0.5649 G=2.3768
+Epoch 1/20 | D Loss: 0.5503 | G Loss: 4.8203 | Diversity: 0.6975
+  Epoch 2 Batch 100/391: D=0.5962 G=3.6067
+  Epoch 2 Batch 200/391: D=0.5868 G=3.4964
+  Epoch 2 Batch 300/391: D=0.4844 G=1.6425
+Epoch 2/20 | D Loss: 0.6661 | G Loss: 3.3482 | Diversity: 0.9349
+  Epoch 3 Batch 100/391: D=0.2108 G=3.2086
+  Epoch 3 Batch 200/391: D=1.2483 G=6.9843
+  Epoch 3 Batch 300/391: D=0.6057 G=4.5692
+Epoch 3/20 | D Loss: 0.5493 | G Loss: 3.4142 | Diversity: 0.8971
+  Epoch 4 Batch 100/391: D=0.6036 G=4.8804
+  Epoch 4 Batch 200/391: D=0.3927 G=4.0987
+  Epoch 4 Batch 300/391: D=0.6806 G=2.2548
+Epoch 4/20 | D Loss: 0.6087 | G Loss: 3.3608 | Diversity: 0.9146
+  Epoch 5 Batch 100/391: D=0.7158 G=4.2124
+  Epoch 5 Batch 200/391: D=0.4081 G=2.9502
+  Epoch 5 Batch 300/391: D=1.0949 G=2.0565
+Epoch 5/20 | D Loss: 0.6672 | G Loss: 3.0679 | Diversity: 0.9319
+  Epoch 6 Batch 100/391: D=0.5368 G=2.7816
+  Epoch 6 Batch 200/391: D=0.3948 G=2.9172
+  Epoch 6 Batch 300/391: D=0.6805 G=6.0565
+Epoch 6/20 | D Loss: 0.6255 | G Loss: 3.2331 | Diversity: 0.9302
+  Epoch 7 Batch 100/391: D=0.4999 G=2.4198
+  Epoch 7 Batch 200/391: D=0.6216 G=3.7266
+  Epoch 7 Batch 300/391: D=0.4528 G=2.6013
+Epoch 7/20 | D Loss: 0.6492 | G Loss: 3.0396 | Diversity: 0.9307
+  Epoch 8 Batch 100/391: D=0.5608 G=2.6606
+  Epoch 8 Batch 200/391: D=0.5409 G=2.3076
+  Epoch 8 Batch 300/391: D=0.3240 G=2.8673
+Epoch 8/20 | D Loss: 0.5001 | G Loss: 3.5412 | Diversity: 0.9295
+  Epoch 9 Batch 100/391: D=0.1993 G=4.3194
+  Epoch 9 Batch 200/391: D=0.1262 G=3.7474
+  Epoch 9 Batch 300/391: D=0.5529 G=3.6950
+Epoch 9/20 | D Loss: 0.4804 | G Loss: 3.4456 | Diversity: 0.9050
+  Epoch 10 Batch 100/391: D=1.1041 G=1.1290
+  Epoch 10 Batch 200/391: D=0.4339 G=3.2426
+  Epoch 10 Batch 300/391: D=0.1805 G=3.4783
+Epoch 10/20 | D Loss: 0.4912 | G Loss: 3.4336 | Diversity: 0.9285
+  Epoch 11 Batch 100/391: D=0.2010 G=2.9987
+  Epoch 11 Batch 200/391: D=0.6490 G=1.6883
+  Epoch 11 Batch 300/391: D=0.6116 G=1.8073
+Epoch 11/20 | D Loss: 0.3773 | G Loss: 3.5873 | Diversity: 0.9313
+  Epoch 12 Batch 100/391: D=0.4417 G=2.5107
+  Epoch 12 Batch 200/391: D=0.3818 G=2.5775
+  Epoch 12 Batch 300/391: D=0.7422 G=3.0828
+Epoch 12/20 | D Loss: 0.5521 | G Loss: 3.3257 | Diversity: 0.9155
+  Epoch 13 Batch 100/391: D=0.1246 G=3.9426
+  Epoch 13 Batch 200/391: D=0.3418 G=3.1163
+  Epoch 13 Batch 300/391: D=0.5025 G=1.9888
+Epoch 13/20 | D Loss: 0.4017 | G Loss: 3.5929 | Diversity: 0.9098
+  Epoch 14 Batch 100/391: D=0.1438 G=3.2574
+  Epoch 14 Batch 200/391: D=0.2615 G=4.1920
+  Epoch 14 Batch 300/391: D=0.5226 G=4.7805
+Epoch 14/20 | D Loss: 0.3446 | G Loss: 3.6495 | Diversity: 0.9123
+  Epoch 15 Batch 100/391: D=5.1433 G=8.3110
+  Epoch 15 Batch 200/391: D=0.5013 G=4.5178
+  Epoch 15 Batch 300/391: D=0.6898 G=4.8706
+Epoch 15/20 | D Loss: 0.5285 | G Loss: 3.4319 | Diversity: 0.8987
+  Epoch 16 Batch 100/391: D=0.7079 G=4.5107
+  Epoch 16 Batch 200/391: D=0.1625 G=3.0811
+  Epoch 16 Batch 300/391: D=0.1004 G=3.7011
+Epoch 16/20 | D Loss: 0.4021 | G Loss: 3.6222 | Diversity: 0.9104
+  Epoch 17 Batch 100/391: D=0.1573 G=3.9863
+  Epoch 17 Batch 200/391: D=0.1262 G=3.8268
+  Epoch 17 Batch 300/391: D=0.4713 G=3.9940
+Epoch 17/20 | D Loss: 0.3979 | G Loss: 3.6716 | Diversity: 0.9097
+  Epoch 18 Batch 100/391: D=0.0795 G=4.2207
+  Epoch 18 Batch 200/391: D=0.1272 G=2.8550
+  Epoch 18 Batch 300/391: D=0.5363 G=3.4138
+Epoch 18/20 | D Loss: 0.3837 | G Loss: 3.5681 | Diversity: 0.9119
+  Epoch 19 Batch 100/391: D=0.5605 G=8.0562
+  Epoch 19 Batch 200/391: D=0.1233 G=4.9884
+  Epoch 19 Batch 300/391: D=0.1480 G=3.4919
+Epoch 19/20 | D Loss: 0.3891 | G Loss: 3.5170 | Diversity: 0.9301
+  Epoch 20 Batch 100/391: D=0.6760 G=4.3845
+  Epoch 20 Batch 200/391: D=0.1926 G=4.7288
+  Epoch 20 Batch 300/391: D=0.6347 G=2.4304
+Epoch 20/20 | D Loss: 0.3860 | G Loss: 3.6684 | Diversity: 0.8830
+Training complete. Saving final samples and metrics...
+Final samples saved
+Loss & diversity plots saved
+GAN checkpoints saved
+
+=== Mode Collapse Analysis ===
+Max diversity: 0.9349
+Final diversity: 0.8830
+Diversity stable, no obvious mode collapse
+GAN experiment complete!

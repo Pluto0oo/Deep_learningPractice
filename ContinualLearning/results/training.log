@@ -1,0 +1,464 @@
+2026-07-22 21:19:11,009 - __main__ - INFO - Using device: cpu
+2026-07-22 21:19:11,523 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-07-22 21:19:11,772 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-07-22 21:19:11,773 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-22 21:19:12,025 - httpx - INFO - HTTP Request: GET https://huggingface.co/bert-base-uncased/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-07-22 21:19:12,283 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-22 21:19:12,941 - httpx - INFO - HTTP Request: GET https://huggingface.co/bert-base-uncased/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-22 21:19:13,188 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:19:13,426 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-22 21:19:13,675 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:19:13,919 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-22 21:19:14,171 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/vocab.txt "HTTP/1.1 200 OK"
+2026-07-22 21:19:14,531 - httpx - INFO - HTTP Request: GET https://huggingface.co/bert-base-uncased/resolve/main/vocab.txt "HTTP/1.1 200 OK"
+2026-07-22 21:19:15,002 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/tokenizer.json "HTTP/1.1 200 OK"
+2026-07-22 21:19:15,243 - httpx - INFO - HTTP Request: GET https://huggingface.co/bert-base-uncased/resolve/main/tokenizer.json "HTTP/1.1 200 OK"
+2026-07-22 21:19:15,825 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/added_tokens.json "HTTP/1.1 404 Not Found"
+2026-07-22 21:19:16,067 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/special_tokens_map.json "HTTP/1.1 404 Not Found"
+2026-07-22 21:19:16,310 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
+2026-07-22 21:19:16,378 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 21:19:16,378 - src.data - INFO - Loading dataset: imdb
+2026-07-22 21:19:16,614 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/imdb/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:19:16,851 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/stanfordnlp/imdb/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:19:16,928 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/stanfordnlp/imdb/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/README.md "HTTP/1.1 200 OK"
+2026-07-22 21:19:17,028 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/datasets/stanfordnlp/imdb/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/README.md "HTTP/1.1 200 OK"
+2026-07-22 21:19:17,283 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/imdb/resolve/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/imdb.py "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:19:17,520 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/stanfordnlp/imdb/resolve/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/imdb.py "HTTP/1.1 404 Not Found"
+2026-07-22 21:19:18,224 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/imdb/imdb.py "HTTP/1.1 200 OK"
+2026-07-22 21:23:46,472 - __main__ - INFO - Using device: cpu
+2026-07-22 21:23:46,885 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-07-22 21:23:47,561 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-22 21:23:47,561 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-22 21:23:47,803 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:23:48,038 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-22 21:23:48,281 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:23:48,549 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-22 21:23:48,615 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 21:23:48,615 - src.data - INFO - Loading dataset: imdb
+2026-07-22 21:23:48,849 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/imdb/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:23:49,094 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/stanfordnlp/imdb/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:23:49,173 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/stanfordnlp/imdb/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/README.md "HTTP/1.1 200 OK"
+2026-07-22 21:23:49,420 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/imdb/resolve/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/imdb.py "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:23:49,667 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/stanfordnlp/imdb/resolve/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/imdb.py "HTTP/1.1 404 Not Found"
+2026-07-22 21:23:50,369 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/imdb/imdb.py "HTTP/1.1 200 OK"
+2026-07-22 21:28:31,652 - __main__ - INFO - Using device: cpu
+2026-07-22 21:28:32,144 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-07-22 21:28:32,145 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-22 21:28:32,450 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-22 21:28:32,723 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:28:33,003 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-22 21:28:33,275 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:28:33,672 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-22 21:28:33,752 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 21:28:33,752 - src.data - INFO - Loading dataset: imdb
+2026-07-22 21:28:34,022 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/imdb/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:28:34,283 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/stanfordnlp/imdb/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:28:34,382 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/stanfordnlp/imdb/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/README.md "HTTP/1.1 200 OK"
+2026-07-22 21:28:34,645 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/imdb/resolve/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/imdb.py "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:28:34,904 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/stanfordnlp/imdb/resolve/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/imdb.py "HTTP/1.1 404 Not Found"
+2026-07-22 21:28:35,690 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/imdb/imdb.py "HTTP/1.1 200 OK"
+2026-07-22 21:33:26,957 - __main__ - INFO - Using device: cpu
+2026-07-22 21:33:27,371 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-07-22 21:33:27,371 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-22 21:33:27,618 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-22 21:33:27,887 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:33:28,128 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-22 21:33:28,365 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:33:28,605 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-22 21:33:28,698 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 21:33:28,698 - src.data - INFO - Loading dataset: imdb
+2026-07-22 21:33:28,932 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/imdb/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:33:29,177 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/stanfordnlp/imdb/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:33:29,252 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/stanfordnlp/imdb/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/README.md "HTTP/1.1 200 OK"
+2026-07-22 21:33:29,515 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/imdb/resolve/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/imdb.py "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:33:29,754 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/stanfordnlp/imdb/resolve/e6281661ce1c48d982bc483cf8a173c1bbeb5d31/imdb.py "HTTP/1.1 404 Not Found"
+2026-07-22 21:33:30,617 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/imdb/imdb.py "HTTP/1.1 200 OK"
+2026-07-22 21:48:04,548 - __main__ - INFO - Using device: cpu
+2026-07-22 21:48:05,117 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-07-22 21:48:05,118 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-07-22 21:48:05,382 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/bert-base-uncased/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-07-22 21:48:05,644 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:48:05,911 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-07-22 21:48:06,163 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:48:06,424 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/google-bert/bert-base-uncased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-07-22 21:48:06,491 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 21:48:06,491 - src.data - INFO - Loading dataset: imdb
+2026-07-22 21:48:06,750 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/imdb "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:48:07,015 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/stanfordnlp/imdb "HTTP/1.1 200 OK"
+2026-07-22 21:48:08,042 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/imdb "HTTP/1.1 307 Temporary Redirect"
+2026-07-22 21:48:08,307 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/stanfordnlp/imdb "HTTP/1.1 200 OK"
+2026-07-22 21:55:17,857 - __main__ - INFO - Using device: cpu
+2026-07-22 21:55:18,342 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 21:55:18,342 - src.data - INFO - Loading dataset: imdb
+2026-07-22 21:55:50,473 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 21:55:50,474 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 21:56:12,795 - huggingface_hub.utils._http - WARNING - '(ReadTimeoutError("HTTPSConnectionPool(host='us.aws.cdn.hf.co', port=443): Read timed out. (read timeout=10)"), '(Request ID: f262b084-e854-492e-9f91-44621f7db29d)')' thrown while requesting GET https://huggingface.co/datasets/ag_news/resolve/eb185aade064a813bc0b7f42de02595523103ca4/data/train-00000-of-00001.parquet
+2026-07-22 21:56:12,795 - huggingface_hub.utils._http - WARNING - Retrying in 1s [Retry 1/5].
+2026-07-22 21:56:39,145 - __main__ - INFO - Loading test sets
+2026-07-22 21:56:39,145 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 21:56:49,968 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:00:29,968 - __main__ - INFO - Using device: cpu
+2026-07-22 22:00:30,425 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:00:30,426 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:00:40,908 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:00:40,908 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:00:50,455 - __main__ - INFO - Loading test sets
+2026-07-22 22:00:50,455 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:01:01,584 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:03:09,956 - __main__ - INFO - Using device: cpu
+2026-07-22 22:03:10,374 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:03:10,374 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:03:20,331 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:03:20,331 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:03:30,741 - __main__ - INFO - Loading test sets
+2026-07-22 22:03:30,741 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:03:40,768 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:03:52,562 - __main__ - INFO - ==================================================
+2026-07-22 22:03:52,562 - __main__ - INFO - Training on Task 1
+2026-07-22 22:03:52,562 - __main__ - INFO - ==================================================
+2026-07-22 22:11:40,412 - __main__ - INFO - Using device: cpu
+2026-07-22 22:11:44,669 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:11:44,669 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:11:51,441 - datasets.load - WARNING - Using the latest cached version of the dataset since imdb couldn't be found on the Hugging Face Hub
+2026-07-22 22:14:40,842 - __main__ - INFO - Using device: cpu
+2026-07-22 22:14:41,392 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:14:41,392 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:14:55,639 - src.data - INFO - Sampling 1000 examples from 25000
+2026-07-22 22:14:55,650 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:14:55,650 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:15:04,642 - src.data - INFO - Sampling 1000 examples from 120000
+2026-07-22 22:15:04,651 - __main__ - INFO - Loading test sets
+2026-07-22 22:15:04,651 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:15:13,021 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:17:29,673 - __main__ - INFO - Using device: cpu
+2026-07-22 22:17:30,146 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:17:30,146 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:17:32,735 - datasets.load - WARNING - Using the latest cached version of the dataset since imdb couldn't be found on the Hugging Face Hub
+2026-07-22 22:17:32,737 - datasets.packaged_modules.cache.cache - WARNING - Found the latest cached dataset configuration 'plain_text' at C:\Users\17456\.cache\huggingface\datasets\imdb\plain_text\0.0.0\e6281661ce1c48d982bc483cf8a173c1bbeb5d31 (last modified on Wed Jul 22 21:55:50 2026).
+2026-07-22 22:17:32,835 - src.data - INFO - Sampling 1000 examples from 25000
+2026-07-22 22:17:32,843 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:17:32,843 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:17:42,887 - src.data - INFO - Sampling 1000 examples from 120000
+2026-07-22 22:17:42,895 - __main__ - INFO - Loading test sets
+2026-07-22 22:17:42,897 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:17:54,055 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:18:03,223 - __main__ - INFO - ==================================================
+2026-07-22 22:18:03,223 - __main__ - INFO - Training on Task 1
+2026-07-22 22:18:03,223 - __main__ - INFO - ==================================================
+2026-07-22 22:18:37,939 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:18:37,939 - src.trainer - INFO -   Train Loss: 1.1157, Accuracy: 0.4833
+2026-07-22 22:18:37,939 - src.trainer - INFO -   Val Loss: 0.6613, Accuracy: 0.6700
+2026-07-22 22:18:37,939 - src.trainer - INFO -   Time: 34.72s
+2026-07-22 22:19:12,820 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:19:12,821 - src.trainer - INFO -   Train Loss: 0.6113, Accuracy: 0.6956
+2026-07-22 22:19:12,821 - src.trainer - INFO -   Val Loss: 0.6136, Accuracy: 0.7200
+2026-07-22 22:19:12,821 - src.trainer - INFO -   Time: 34.88s
+2026-07-22 22:19:12,821 - __main__ - INFO - ==================================================
+2026-07-22 22:19:12,821 - __main__ - INFO - Evaluating after Task 1
+2026-07-22 22:19:12,821 - __main__ - INFO - ==================================================
+2026-07-22 22:25:18,965 - __main__ - INFO - Using device: cpu
+2026-07-22 22:25:19,433 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:25:19,433 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:25:30,727 - src.data - INFO - Sampling 1000 examples from 25000
+2026-07-22 22:25:30,737 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:25:30,737 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:25:39,839 - src.data - INFO - Sampling 1000 examples from 120000
+2026-07-22 22:25:39,850 - __main__ - INFO - Loading test sets
+2026-07-22 22:25:39,850 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:25:49,927 - src.data - INFO - Sampling 1000 test examples from 25000
+2026-07-22 22:25:49,939 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:25:57,217 - src.data - INFO - Sampling 1000 test examples from 7600
+2026-07-22 22:25:59,222 - __main__ - INFO - ==================================================
+2026-07-22 22:25:59,222 - __main__ - INFO - Training on Task 1
+2026-07-22 22:25:59,222 - __main__ - INFO - ==================================================
+2026-07-22 22:26:34,261 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:26:34,261 - src.trainer - INFO -   Train Loss: 1.0471, Accuracy: 0.4678
+2026-07-22 22:26:34,261 - src.trainer - INFO -   Val Loss: 0.7044, Accuracy: 0.5500
+2026-07-22 22:26:34,261 - src.trainer - INFO -   Time: 35.04s
+2026-07-22 22:27:09,009 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:27:09,009 - src.trainer - INFO -   Train Loss: 0.6032, Accuracy: 0.7100
+2026-07-22 22:27:09,009 - src.trainer - INFO -   Val Loss: 0.6387, Accuracy: 0.7500
+2026-07-22 22:27:09,009 - src.trainer - INFO -   Time: 34.75s
+2026-07-22 22:27:09,009 - __main__ - INFO - ==================================================
+2026-07-22 22:27:09,009 - __main__ - INFO - Evaluating after Task 1
+2026-07-22 22:27:09,009 - __main__ - INFO - ==================================================
+2026-07-22 22:27:25,069 - __main__ - INFO - Task 1 accuracy: 0.7130
+2026-07-22 22:27:25,069 - __main__ - INFO - ==================================================
+2026-07-22 22:27:25,069 - __main__ - INFO - Training on Task 2
+2026-07-22 22:27:25,069 - __main__ - INFO - ==================================================
+2026-07-22 22:27:59,065 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:27:59,065 - src.trainer - INFO -   Train Loss: 1.2807, Accuracy: 0.5956
+2026-07-22 22:27:59,065 - src.trainer - INFO -   Val Loss: 0.5260, Accuracy: 0.8700
+2026-07-22 22:27:59,065 - src.trainer - INFO -   Time: 34.00s
+2026-07-22 22:28:33,239 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:28:33,239 - src.trainer - INFO -   Train Loss: 0.4193, Accuracy: 0.8900
+2026-07-22 22:28:33,239 - src.trainer - INFO -   Val Loss: 0.3318, Accuracy: 0.9200
+2026-07-22 22:28:33,239 - src.trainer - INFO -   Time: 34.17s
+2026-07-22 22:28:33,239 - __main__ - INFO - ==================================================
+2026-07-22 22:28:33,239 - __main__ - INFO - Evaluating after Task 2
+2026-07-22 22:28:33,239 - __main__ - INFO - ==================================================
+2026-07-22 22:29:05,595 - __main__ - INFO - Task 1 accuracy: 0.6230
+2026-07-22 22:29:05,595 - __main__ - INFO - Task 2 accuracy: 0.8830
+2026-07-22 22:29:05,595 - __main__ - INFO - 
+==================================================
+2026-07-22 22:29:05,595 - __main__ - INFO - FINAL RESULTS - Fine Tuning
+2026-07-22 22:29:05,595 - __main__ - INFO - ==================================================
+2026-07-22 22:29:05,595 - __main__ - INFO - Task 1 final accuracy: 0.6230
+2026-07-22 22:29:05,595 - __main__ - INFO - Task 2 final accuracy: 0.8830
+2026-07-22 22:29:05,595 - __main__ - INFO - Forgetting rate (Task 1): 0.0900
+2026-07-22 22:29:05,595 - __main__ - INFO - Total training time: 186.37s
+2026-07-22 22:29:05,595 - __main__ - INFO - Memory usage - Allocated: 0.00MB, Reserved: 0.00MB
+2026-07-22 22:29:06,080 - src.visualization - INFO - Training curves saved to ./results/plots\fine_tuning_curves.png
+2026-07-22 22:29:06,085 - src.evaluator - INFO - Results saved to ./results\fine_tuning_results.npy
+2026-07-22 22:31:14,813 - __main__ - INFO - Using device: cpu
+2026-07-22 22:33:42,658 - __main__ - INFO - Using device: cpu
+2026-07-22 22:33:43,207 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:33:43,207 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:33:54,490 - src.data - INFO - Sampling 1000 examples from 25000
+2026-07-22 22:33:54,499 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:33:54,500 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:34:06,150 - src.data - INFO - Sampling 1000 examples from 120000
+2026-07-22 22:34:06,161 - __main__ - INFO - Loading test sets
+2026-07-22 22:34:06,162 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:34:16,134 - src.data - INFO - Sampling 1000 test examples from 25000
+2026-07-22 22:34:16,141 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:34:22,911 - src.data - INFO - Sampling 1000 test examples from 7600
+2026-07-22 22:36:16,027 - __main__ - INFO - Using device: cpu
+2026-07-22 22:36:16,528 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:36:16,528 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:36:27,479 - src.data - INFO - Sampling 1000 examples from 25000
+2026-07-22 22:36:27,485 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:36:27,486 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:36:38,512 - src.data - INFO - Sampling 1000 examples from 120000
+2026-07-22 22:36:38,525 - __main__ - INFO - Loading test sets
+2026-07-22 22:36:38,525 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:36:51,427 - src.data - INFO - Sampling 1000 test examples from 25000
+2026-07-22 22:36:51,437 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:37:00,334 - src.data - INFO - Sampling 1000 test examples from 7600
+2026-07-22 22:37:02,285 - __main__ - INFO - ==================================================
+2026-07-22 22:37:02,285 - __main__ - INFO - Training on Task 1
+2026-07-22 22:37:02,285 - __main__ - INFO - ==================================================
+2026-07-22 22:37:37,907 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:37:37,907 - src.trainer - INFO -   Train Loss: 1.0525, Accuracy: 0.5078
+2026-07-22 22:37:37,907 - src.trainer - INFO -   Val Loss: 0.6005, Accuracy: 0.7300
+2026-07-22 22:37:37,908 - src.trainer - INFO -   Time: 35.62s
+2026-07-22 22:38:13,491 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:38:13,491 - src.trainer - INFO -   Train Loss: 0.6041, Accuracy: 0.7189
+2026-07-22 22:38:13,491 - src.trainer - INFO -   Val Loss: 0.5491, Accuracy: 0.8000
+2026-07-22 22:38:13,491 - src.trainer - INFO -   Time: 35.58s
+2026-07-22 22:38:13,491 - __main__ - INFO - ==================================================
+2026-07-22 22:38:13,491 - __main__ - INFO - Computing Fisher information for EWC
+2026-07-22 22:38:13,491 - __main__ - INFO - ==================================================
+2026-07-22 22:38:56,582 - __main__ - INFO - Using device: cpu
+2026-07-22 22:38:57,096 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:38:57,096 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:39:08,470 - src.data - INFO - Sampling 1000 examples from 25000
+2026-07-22 22:39:08,478 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:39:08,479 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:39:17,465 - src.data - INFO - Sampling 1000 examples from 120000
+2026-07-22 22:39:17,478 - __main__ - INFO - Loading test sets
+2026-07-22 22:39:17,478 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:39:26,679 - src.data - INFO - Sampling 1000 test examples from 25000
+2026-07-22 22:39:26,689 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:39:33,523 - src.data - INFO - Sampling 1000 test examples from 7600
+2026-07-22 22:39:35,496 - __main__ - INFO - ==================================================
+2026-07-22 22:39:35,497 - __main__ - INFO - Training on Task 1
+2026-07-22 22:39:35,497 - __main__ - INFO - ==================================================
+2026-07-22 22:40:10,678 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:40:10,678 - src.trainer - INFO -   Train Loss: 1.0533, Accuracy: 0.4978
+2026-07-22 22:40:10,678 - src.trainer - INFO -   Val Loss: 0.6560, Accuracy: 0.6500
+2026-07-22 22:40:10,678 - src.trainer - INFO -   Time: 35.18s
+2026-07-22 22:40:45,899 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:40:45,899 - src.trainer - INFO -   Train Loss: 0.6325, Accuracy: 0.6889
+2026-07-22 22:40:45,899 - src.trainer - INFO -   Val Loss: 0.6128, Accuracy: 0.7000
+2026-07-22 22:40:45,899 - src.trainer - INFO -   Time: 35.22s
+2026-07-22 22:40:45,899 - __main__ - INFO - ==================================================
+2026-07-22 22:40:45,899 - __main__ - INFO - Computing Fisher information for EWC
+2026-07-22 22:40:45,899 - __main__ - INFO - ==================================================
+2026-07-22 22:40:49,192 - __main__ - INFO - ==================================================
+2026-07-22 22:40:49,193 - __main__ - INFO - Evaluating after Task 1
+2026-07-22 22:40:49,193 - __main__ - INFO - ==================================================
+2026-07-22 22:41:06,104 - __main__ - INFO - Task 1 accuracy: 0.7180
+2026-07-22 22:41:06,104 - __main__ - INFO - ==================================================
+2026-07-22 22:41:06,104 - __main__ - INFO - Training on Task 2 with EWC
+2026-07-22 22:41:06,104 - __main__ - INFO - ==================================================
+2026-07-22 22:41:26,734 - __main__ - INFO - Using device: cpu
+2026-07-22 22:41:27,576 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:41:27,576 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:41:38,688 - src.data - INFO - Sampling 1000 examples from 25000
+2026-07-22 22:41:38,697 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:41:38,697 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:41:50,316 - src.data - INFO - Sampling 1000 examples from 120000
+2026-07-22 22:41:50,327 - __main__ - INFO - Loading test sets
+2026-07-22 22:41:50,327 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:41:59,237 - src.data - INFO - Sampling 1000 test examples from 25000
+2026-07-22 22:41:59,245 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:42:09,457 - src.data - INFO - Sampling 1000 test examples from 7600
+2026-07-22 22:42:11,437 - __main__ - INFO - ==================================================
+2026-07-22 22:42:11,437 - __main__ - INFO - Training on Task 1
+2026-07-22 22:42:11,437 - __main__ - INFO - ==================================================
+2026-07-22 22:42:46,385 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:42:46,385 - src.trainer - INFO -   Train Loss: 1.0509, Accuracy: 0.4978
+2026-07-22 22:42:46,385 - src.trainer - INFO -   Val Loss: 0.6443, Accuracy: 0.6900
+2026-07-22 22:42:46,385 - src.trainer - INFO -   Time: 34.95s
+2026-07-22 22:43:21,318 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:43:21,318 - src.trainer - INFO -   Train Loss: 0.6119, Accuracy: 0.7011
+2026-07-22 22:43:21,318 - src.trainer - INFO -   Val Loss: 0.5779, Accuracy: 0.7100
+2026-07-22 22:43:21,318 - src.trainer - INFO -   Time: 34.93s
+2026-07-22 22:43:21,318 - __main__ - INFO - ==================================================
+2026-07-22 22:43:21,318 - __main__ - INFO - Computing Fisher information for EWC
+2026-07-22 22:43:21,318 - __main__ - INFO - ==================================================
+2026-07-22 22:43:24,546 - __main__ - INFO - ==================================================
+2026-07-22 22:43:24,546 - __main__ - INFO - Evaluating after Task 1
+2026-07-22 22:43:24,546 - __main__ - INFO - ==================================================
+2026-07-22 22:43:41,563 - __main__ - INFO - Task 1 accuracy: 0.7180
+2026-07-22 22:43:41,563 - __main__ - INFO - ==================================================
+2026-07-22 22:43:41,563 - __main__ - INFO - Training on Task 2 with EWC
+2026-07-22 22:43:41,563 - __main__ - INFO - ==================================================
+2026-07-22 22:44:24,518 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:44:24,518 - src.trainer - INFO -   Train Loss: 1.3421, Accuracy: 0.6033
+2026-07-22 22:44:24,518 - src.trainer - INFO -   Val Loss: 0.4245, Accuracy: 0.9000
+2026-07-22 22:44:24,518 - src.trainer - INFO -   Time: 42.96s
+2026-07-22 22:45:05,597 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:45:05,597 - src.trainer - INFO -   Train Loss: 0.4184, Accuracy: 0.8767
+2026-07-22 22:45:05,597 - src.trainer - INFO -   Val Loss: 0.2932, Accuracy: 0.9400
+2026-07-22 22:45:05,597 - src.trainer - INFO -   Time: 41.08s
+2026-07-22 22:45:05,597 - __main__ - INFO - ==================================================
+2026-07-22 22:45:05,597 - __main__ - INFO - Evaluating after Task 2
+2026-07-22 22:45:05,597 - __main__ - INFO - ==================================================
+2026-07-22 22:45:39,745 - __main__ - INFO - Task 1 accuracy: 0.4530
+2026-07-22 22:45:39,745 - __main__ - INFO - Task 2 accuracy: 0.8950
+2026-07-22 22:45:39,745 - __main__ - INFO - 
+==================================================
+2026-07-22 22:45:39,745 - __main__ - INFO - FINAL RESULTS - EWC
+2026-07-22 22:45:39,745 - __main__ - INFO - ==================================================
+2026-07-22 22:45:39,745 - __main__ - INFO - EWC Lambda: 1000.0
+2026-07-22 22:45:39,745 - __main__ - INFO - Task 1 final accuracy: 0.4530
+2026-07-22 22:45:39,745 - __main__ - INFO - Task 2 final accuracy: 0.8950
+2026-07-22 22:45:39,745 - __main__ - INFO - Forgetting rate (Task 1): 0.2650
+2026-07-22 22:45:39,745 - __main__ - INFO - Total training time: 208.31s
+2026-07-22 22:45:39,745 - __main__ - INFO - Memory usage - Allocated: 0.00MB, Reserved: 0.00MB
+2026-07-22 22:45:40,239 - src.visualization - INFO - Training curves saved to ./results/plots\ewc_curves.png
+2026-07-22 22:45:40,240 - src.evaluator - INFO - Results saved to ./results\ewc_results.npy
+2026-07-22 22:46:40,880 - __main__ - INFO - Using device: cpu
+2026-07-22 22:46:41,421 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:46:41,421 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:46:52,532 - src.data - INFO - Sampling 1000 examples from 25000
+2026-07-22 22:46:52,543 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:46:52,544 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:47:01,382 - src.data - INFO - Sampling 1000 examples from 120000
+2026-07-22 22:47:01,400 - __main__ - INFO - Loading test sets
+2026-07-22 22:47:01,400 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:47:13,884 - src.data - INFO - Sampling 1000 test examples from 25000
+2026-07-22 22:47:13,892 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:47:22,214 - src.data - INFO - Sampling 1000 test examples from 7600
+2026-07-22 22:47:24,315 - __main__ - INFO - ==================================================
+2026-07-22 22:47:24,315 - __main__ - INFO - Training on Task 1
+2026-07-22 22:47:24,315 - __main__ - INFO - ==================================================
+2026-07-22 22:48:00,580 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:48:00,580 - src.trainer - INFO -   Train Loss: 1.1365, Accuracy: 0.4311
+2026-07-22 22:48:00,580 - src.trainer - INFO -   Val Loss: 0.6785, Accuracy: 0.6500
+2026-07-22 22:48:00,580 - src.trainer - INFO -   Time: 36.26s
+2026-07-22 22:48:37,390 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:48:37,390 - src.trainer - INFO -   Train Loss: 0.6289, Accuracy: 0.6811
+2026-07-22 22:48:37,391 - src.trainer - INFO -   Val Loss: 0.6334, Accuracy: 0.7100
+2026-07-22 22:48:37,391 - src.trainer - INFO -   Time: 36.81s
+2026-07-22 22:48:37,391 - __main__ - INFO - ==================================================
+2026-07-22 22:48:37,391 - __main__ - INFO - Evaluating after Task 1
+2026-07-22 22:48:37,391 - __main__ - INFO - ==================================================
+2026-07-22 22:48:54,492 - __main__ - INFO - Task 1 accuracy: 0.7130
+2026-07-22 22:48:54,830 - __main__ - INFO - ==================================================
+2026-07-22 22:48:54,831 - __main__ - INFO - Training on Task 2 with LWF
+2026-07-22 22:48:54,831 - __main__ - INFO - ==================================================
+2026-07-22 22:49:54,368 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:49:54,368 - src.trainer - INFO -   Train Loss: 0.8466, Accuracy: 0.5133
+2026-07-22 22:49:54,368 - src.trainer - INFO -   Val Loss: 1.1099, Accuracy: 0.6400
+2026-07-22 22:49:54,368 - src.trainer - INFO -   Time: 59.54s
+2026-07-22 22:50:53,304 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:50:53,304 - src.trainer - INFO -   Train Loss: 0.6530, Accuracy: 0.7144
+2026-07-22 22:50:53,305 - src.trainer - INFO -   Val Loss: 1.0440, Accuracy: 0.6600
+2026-07-22 22:50:53,305 - src.trainer - INFO -   Time: 58.94s
+2026-07-22 22:50:53,305 - __main__ - INFO - ==================================================
+2026-07-22 22:50:53,305 - __main__ - INFO - Evaluating after Task 2
+2026-07-22 22:50:53,305 - __main__ - INFO - ==================================================
+2026-07-22 22:51:27,847 - __main__ - INFO - Task 1 accuracy: 0.7150
+2026-07-22 22:51:27,847 - __main__ - INFO - Task 2 accuracy: 0.6990
+2026-07-22 22:51:27,847 - __main__ - INFO - 
+==================================================
+2026-07-22 22:51:27,847 - __main__ - INFO - FINAL RESULTS - LWF
+2026-07-22 22:51:27,847 - __main__ - INFO - ==================================================
+2026-07-22 22:51:27,847 - __main__ - INFO - Task 1 final accuracy: 0.7150
+2026-07-22 22:51:27,847 - __main__ - INFO - Task 2 final accuracy: 0.6990
+2026-07-22 22:51:27,847 - __main__ - INFO - Forgetting rate (Task 1): -0.0020
+2026-07-22 22:51:27,847 - __main__ - INFO - Total training time: 243.53s
+2026-07-22 22:51:27,847 - __main__ - INFO - Memory usage - Allocated: 0.00MB, Reserved: 0.00MB
+2026-07-22 22:51:28,323 - src.visualization - INFO - Training curves saved to ./results/plots\lwf_curves.png
+2026-07-22 22:51:28,325 - src.evaluator - INFO - Results saved to ./results\lwf_results.npy
+2026-07-22 22:54:42,344 - __main__ - INFO - Using device: cpu
+2026-07-22 22:54:42,501 - huggingface_hub.utils._http - WARNING - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /distilbert-base-uncased/resolve/main/tokenizer_config.json (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1017)')))"), '(Request ID: a4657dd9-e8ba-4459-a3dd-b9e97bc19046)')' thrown while requesting HEAD https://huggingface.co/distilbert-base-uncased/resolve/main/tokenizer_config.json
+2026-07-22 22:54:42,502 - huggingface_hub.utils._http - WARNING - Retrying in 1s [Retry 1/5].
+2026-07-22 22:54:43,698 - huggingface_hub.utils._http - WARNING - '(MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /distilbert-base-uncased/resolve/main/tokenizer_config.json (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1017)')))"), '(Request ID: 09c3ade5-c1c8-4a09-928d-8d42ba17b236)')' thrown while requesting HEAD https://huggingface.co/distilbert-base-uncased/resolve/main/tokenizer_config.json
+2026-07-22 22:54:43,698 - huggingface_hub.utils._http - WARNING - Retrying in 2s [Retry 2/5].
+2026-07-22 22:54:46,503 - __main__ - INFO - Loading task 1: imdb
+2026-07-22 22:54:46,503 - src.data - INFO - Loading dataset: imdb
+2026-07-22 22:54:57,381 - src.data - INFO - Sampling 1000 examples from 25000
+2026-07-22 22:54:57,390 - __main__ - INFO - Loading task 2: ag_news
+2026-07-22 22:54:57,390 - src.data - INFO - Loading dataset: ag_news
+2026-07-22 22:55:01,885 - datasets.load - WARNING - Using the latest cached version of the dataset since ag_news couldn't be found on the Hugging Face Hub
+2026-07-22 22:55:01,886 - datasets.packaged_modules.cache.cache - WARNING - Found the latest cached dataset configuration 'default' at C:\Users\17456\.cache\huggingface\datasets\ag_news\default\0.0.0\eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Wed Jul 22 21:56:38 2026).
+2026-07-22 22:55:02,056 - src.data - INFO - Sampling 1000 examples from 120000
+2026-07-22 22:55:02,066 - __main__ - INFO - Loading test sets
+2026-07-22 22:55:02,066 - src.data - INFO - Loading test dataset: imdb
+2026-07-22 22:55:14,998 - datasets.load - WARNING - Using the latest cached version of the dataset since imdb couldn't be found on the Hugging Face Hub
+2026-07-22 22:55:14,999 - datasets.packaged_modules.cache.cache - WARNING - Found the latest cached dataset configuration 'plain_text' at C:\Users\17456\.cache\huggingface\datasets\imdb\plain_text\0.0.0\e6281661ce1c48d982bc483cf8a173c1bbeb5d31 (last modified on Wed Jul 22 21:55:50 2026).
+2026-07-22 22:55:15,068 - src.data - INFO - Sampling 1000 test examples from 25000
+2026-07-22 22:55:15,081 - src.data - INFO - Loading test dataset: ag_news
+2026-07-22 22:55:21,806 - datasets.load - WARNING - Using the latest cached version of the dataset since ag_news couldn't be found on the Hugging Face Hub
+2026-07-22 22:55:21,808 - datasets.packaged_modules.cache.cache - WARNING - Found the latest cached dataset configuration 'default' at C:\Users\17456\.cache\huggingface\datasets\ag_news\default\0.0.0\eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Wed Jul 22 21:56:38 2026).
+2026-07-22 22:55:21,828 - src.data - INFO - Sampling 1000 test examples from 7600
+2026-07-22 22:55:24,100 - __main__ - INFO - ==================================================
+2026-07-22 22:55:24,100 - __main__ - INFO - Training on Task 1
+2026-07-22 22:55:24,100 - __main__ - INFO - ==================================================
+2026-07-22 22:56:00,483 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:56:00,483 - src.trainer - INFO -   Train Loss: 1.0827, Accuracy: 0.4533
+2026-07-22 22:56:00,483 - src.trainer - INFO -   Val Loss: 0.6945, Accuracy: 0.5100
+2026-07-22 22:56:00,483 - src.trainer - INFO -   Time: 36.38s
+2026-07-22 22:56:37,110 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:56:37,111 - src.trainer - INFO -   Train Loss: 0.6384, Accuracy: 0.6811
+2026-07-22 22:56:37,111 - src.trainer - INFO -   Val Loss: 0.6429, Accuracy: 0.6900
+2026-07-22 22:56:37,111 - src.trainer - INFO -   Time: 36.63s
+2026-07-22 22:56:37,111 - __main__ - INFO - ==================================================
+2026-07-22 22:56:37,111 - __main__ - INFO - Storing Task 1 samples in buffer
+2026-07-22 22:56:37,111 - __main__ - INFO - ==================================================
+2026-07-22 22:56:37,976 - __main__ - INFO - ==================================================
+2026-07-22 22:56:37,978 - __main__ - INFO - Evaluating after Task 1
+2026-07-22 22:56:37,978 - __main__ - INFO - ==================================================
+2026-07-22 22:56:55,466 - __main__ - INFO - Task 1 accuracy: 0.6780
+2026-07-22 22:56:55,798 - __main__ - INFO - ==================================================
+2026-07-22 22:56:55,798 - __main__ - INFO - Training on Task 2 with DER
+2026-07-22 22:56:55,798 - __main__ - INFO - ==================================================
+2026-07-22 22:58:27,610 - src.trainer - INFO - Epoch 1/2
+2026-07-22 22:58:27,610 - src.trainer - INFO -   Train Loss: 1.6056, Accuracy: 0.6000
+2026-07-22 22:58:27,610 - src.trainer - INFO -   Val Loss: 0.4855, Accuracy: 0.8900
+2026-07-22 22:58:27,610 - src.trainer - INFO -   Time: 91.81s
+2026-07-22 22:59:59,033 - src.trainer - INFO - Epoch 2/2
+2026-07-22 22:59:59,033 - src.trainer - INFO -   Train Loss: 0.7608, Accuracy: 0.8811
+2026-07-22 22:59:59,033 - src.trainer - INFO -   Val Loss: 0.3641, Accuracy: 0.9100
+2026-07-22 22:59:59,033 - src.trainer - INFO -   Time: 91.42s
+2026-07-22 22:59:59,033 - __main__ - INFO - ==================================================
+2026-07-22 22:59:59,033 - __main__ - INFO - Evaluating after Task 2
+2026-07-22 22:59:59,033 - __main__ - INFO - ==================================================
+2026-07-22 23:00:33,310 - __main__ - INFO - Task 1 accuracy: 0.6890
+2026-07-22 23:00:33,310 - __main__ - INFO - Task 2 accuracy: 0.8720
+2026-07-22 23:00:33,310 - __main__ - INFO - 
+==================================================
+2026-07-22 23:00:33,310 - __main__ - INFO - FINAL RESULTS - DER
+2026-07-22 23:00:33,310 - __main__ - INFO - ==================================================
+2026-07-22 23:00:33,310 - __main__ - INFO - Buffer size: 2000
+2026-07-22 23:00:33,310 - __main__ - INFO - Task 1 final accuracy: 0.6890
+2026-07-22 23:00:33,310 - __main__ - INFO - Task 2 final accuracy: 0.8720
+2026-07-22 23:00:33,311 - __main__ - INFO - Forgetting rate (Task 1): -0.0110
+2026-07-22 23:00:33,311 - __main__ - INFO - Total training time: 309.21s
+2026-07-22 23:00:33,311 - __main__ - INFO - Memory usage - Allocated: 0.00MB, Reserved: 0.00MB
+2026-07-22 23:00:33,824 - src.visualization - INFO - Training curves saved to ./results/plots\der_curves.png
+2026-07-22 23:00:33,826 - src.evaluator - INFO - Results saved to ./results\der_results.npy

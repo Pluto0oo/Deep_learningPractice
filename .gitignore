@@ -14,7 +14,7 @@ ActiveLearning/data/processed/
 ActiveLearning/data/*.tar.gz
 ActiveLearning/data/*.npy
 
-# 排除模型权重文件
+# 排除模型权重文件（大文件）
 transfer_learning/models/*.pth
 transfer_learning/results/*.pth
 ActiveLearning/models/*.pth
@@ -39,7 +39,7 @@ Thumbs.db
 # 排除VSCode配置
 .vscode/
 
-# 排除大数据文件
+# 排除大数据目录（各项目data/目录不上传，但results/目录中的实验输出保留）
 data/processed/
 data/raw/
 data/fra-eng/
@@ -51,6 +51,15 @@ FederatedLearning/data/
 # Few-Shot Meta-Learning 数据集（大数据文件不上传）
 Few-Shot  Meta-Learning/data/
 
-# 根目录下的结果和日志
-results/
+# 日志目录（但保留results/目录中的训练日志文件）
 logs/
+
+# 大模型文件（>50MB的模型文件不上传，但保留小模型和所有实验结果数据/图表）
+ReinforcementLearning/results/dqn_cartpole.zip
+ReinforcementLearning/results/prioritized_dqn_cartpole.zip
+GenerativeAI/results/checkpoints/diffusion_optimizer.pth
+GenerativeAI/results/checkpoints/gan_model.pth
+GenerativeAI/results/checkpoints/diffusion_unet/
+
+# 根目录下的旧ActiveLearning实验结果（保留各项目results/目录中的实验输出）
+results/active_learning_imdb_*/
